@@ -164,7 +164,34 @@ if ($isAuthenticated && $activeAction) {
             break;
 
         case 'key_generate':
+            $envPath = $baseDir . '/.env';
+            if (!file_exists($envPath)) {
+                if (file_exists($baseDir . '/.env.example')) {
+                    copy($baseDir . '/.env.example', $envPath);
+                    $commandOutput .= "<div class='text-gold'>File .env dibuat otomatis dari .env.example.</div>\n";
+                } else {
+                    file_put_contents($envPath, "APP_NAME=\"RSU Livasya Awards\"\nAPP_ENV=production\nAPP_KEY=\nAPP_DEBUG=false\nAPP_URL=https://" . ($_SERVER['HTTP_HOST'] ?? 'localhost') . "\n");
+                    $commandOutput .= "<div class='text-gold'>File .env dasar berhasil dibuat.</div>\n";
+                }
+            }
+
+            $content = file_get_contents($envPath);
+            if (!preg_match('/^APP_KEY=/m', $content)) {
+                $content = "APP_KEY=\n" . $content;
+                file_put_contents($envPath, $content);
+                $commandOutput .= "<div class='text-success'>✅ Variabel APP_KEY= berhasil ditambahkan otomatis ke dalam file .env!</div>\n";
+            }
+
             $commandOutput .= executeCommand('php artisan key:generate --force', $baseDir);
+
+            // Verifikasi apakah key benar-benar terisi, jika artisan gagal inject manual
+            $refreshed = file_get_contents($envPath);
+            if (!preg_match('/^APP_KEY=base64:[A-Za-z0-9+\/=]{20,}/m', $refreshed)) {
+                $generatedKey = 'base64:' . base64_encode(random_bytes(32));
+                $refreshed = preg_replace('/^APP_KEY=.*$/m', 'APP_KEY=' . $generatedKey, $refreshed);
+                file_put_contents($envPath, $refreshed);
+                $commandOutput .= "<div class='text-success'>🎉 APP_KEY berhasil di-generate secara otomatis: <code>{$generatedKey}</code></div>\n";
+            }
             break;
 
         case 'copy_env':
