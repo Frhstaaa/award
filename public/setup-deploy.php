@@ -160,7 +160,18 @@ if ($isAuthenticated && $activeAction) {
             break;
 
         case 'git_pull':
-            $commandOutput .= executeCommand('git fetch --all && git pull origin main', $baseDir);
+            executeCommand('git config --global --add safe.directory ' . escapeshellarg($baseDir), $baseDir);
+            if (!is_dir($baseDir . '/.git')) {
+                $commandOutput .= "<div class='text-gold'>📁 Folder .git belum ada (karena upload ZIP). Menginisialisasi repositori Git dan menghubungkan ke GitHub...</div>\n";
+                $commandOutput .= executeCommand('git init', $baseDir);
+                $commandOutput .= executeCommand('git remote add origin https://github.com/Frhstaaa/award.git', $baseDir);
+                $commandOutput .= executeCommand('git fetch origin main', $baseDir);
+                $commandOutput .= executeCommand('git reset --hard origin/main', $baseDir);
+                $commandOutput .= executeCommand('git branch -M main', $baseDir);
+                $commandOutput .= "<div class='text-success'>✅ Berhasil menginisialisasi dan menghubungkan ke GitHub!</div>\n";
+            } else {
+                $commandOutput .= executeCommand('git fetch --all && git reset --hard origin/main && git pull origin main', $baseDir);
+            }
             break;
 
         case 'storage_link':
