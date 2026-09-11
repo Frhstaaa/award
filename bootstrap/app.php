@@ -21,5 +21,12 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (\Illuminate\Http\Exceptions\PostTooLargeException $e, $request) {
+            if ($request->expectsJson() || $request->header('X-Inertia')) {
+                return response()->json([
+                    'message' => 'Ukuran file atau data yang dikirim terlalu besar melebihi batas server (post_max_size / upload_max_filesize).'
+                ], 413);
+            }
+            return back()->with('error', 'Ukuran file yang diunggah terlalu besar melebihi batas server!');
+        });
     })->create();
