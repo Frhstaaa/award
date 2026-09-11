@@ -176,10 +176,12 @@ if ($isAuthenticated && $activeAction) {
             break;
 
         case 'cache_clear':
+            @unlink($baseDir . '/bootstrap/cache/config.php');
+            @unlink($baseDir . '/bootstrap/cache/routes-v7.php');
+            @unlink($baseDir . '/bootstrap/cache/packages.php');
+            @unlink($baseDir . '/bootstrap/cache/services.php');
             $commandOutput .= executeCommand('php artisan optimize:clear', $baseDir);
-            $commandOutput .= executeCommand('php artisan config:cache', $baseDir);
-            $commandOutput .= executeCommand('php artisan route:cache', $baseDir);
-            $commandOutput .= executeCommand('php artisan view:cache', $baseDir);
+            $commandOutput .= executeCommand('php artisan config:clear', $baseDir);
             break;
 
         case 'composer_install':
@@ -192,6 +194,11 @@ if ($isAuthenticated && $activeAction) {
 
         case 'key_generate':
             $envPath = $baseDir . '/.env';
+            @unlink($baseDir . '/bootstrap/cache/config.php');
+            @unlink($baseDir . '/bootstrap/cache/routes-v7.php');
+            @unlink($baseDir . '/bootstrap/cache/packages.php');
+            @unlink($baseDir . '/bootstrap/cache/services.php');
+
             if (!file_exists($envPath)) {
                 if (file_exists($baseDir . '/.env.example')) {
                     copy($baseDir . '/.env.example', $envPath);
@@ -219,10 +226,17 @@ if ($isAuthenticated && $activeAction) {
                 file_put_contents($envPath, $refreshed);
                 $commandOutput .= "<div class='text-success'>🎉 APP_KEY berhasil di-generate secara otomatis: <code>{$generatedKey}</code></div>\n";
             }
+
+            @unlink($baseDir . '/bootstrap/cache/config.php');
+            $commandOutput .= executeCommand('php artisan config:clear', $baseDir);
             break;
 
         case 'apply_prod_env':
             $envPath = $baseDir . '/.env';
+            @unlink($baseDir . '/bootstrap/cache/config.php');
+            @unlink($baseDir . '/bootstrap/cache/routes-v7.php');
+            @unlink($baseDir . '/bootstrap/cache/packages.php');
+            @unlink($baseDir . '/bootstrap/cache/services.php');
             $prodEnv = "APP_NAME=\"RSU Livasya Awards\"\n" .
                 "APP_ENV=production\n" .
                 "APP_KEY=base64:0UVyB1d6RYVyiALlhTjG4bRgCcqKWuJ1NH/S6dLANVE=\n" .
@@ -267,6 +281,7 @@ if ($isAuthenticated && $activeAction) {
                 "MAIL_FROM_NAME=\"\${APP_NAME}\"\n\n" .
                 "VITE_APP_NAME=\"\${APP_NAME}\"\n";
             file_put_contents($envPath, $prodEnv);
+            $commandOutput .= executeCommand('php artisan config:clear', $baseDir);
             $commandOutput .= "<h4 class='text-success'>✅ Konfigurasi .env Produksi Berhasil Diterapkan ke livasya-award.frahesta.com!</h4>\n";
             $commandOutput .= "<div style='font-size:12px;color:#cbd5e1;'>DB: <b>liva_awarddb</b> | User: <b>liva_awarddb</b> | URL: <b>https://livasya-award.frahesta.com</b></div>\n";
             break;
