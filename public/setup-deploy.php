@@ -111,7 +111,24 @@ if ($isAuthenticated && $activeAction) {
         case 'full_deploy':
             $commandOutput .= "<h4 class='text-gold'>🚀 MEMULAI DEPLOYMENT OTOMATIS PENUH</h4>";
             
-            // 0. Auto-Ensure APP_KEY
+            // 0. Fix permissions first so artisan can write logs/caches without Permission Denied
+            if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
+                $commandOutput .= executeCommand('chmod -R 775 storage bootstrap/cache && chmod -R 777 storage/logs storage/framework 2>/dev/null || true', $baseDir);
+            }
+
+            // 1. Delete cached config & routes so new .env is immediately loaded by Artisan
+            @unlink($baseDir . '/bootstrap/cache/config.php');
+            @unlink($baseDir . '/bootstrap/cache/routes-v7.php');
+            @unlink($baseDir . '/bootstrap/cache/packages.php');
+            @unlink($baseDir . '/bootstrap/cache/services.php');
+            $commandOutput .= "<div class='text-gold'>🧹 Cache konfigurasi lama dibersihkan agar membaca .env terbaru.</div>\n";
+
+            // 2. Git pull
+            if (is_dir($baseDir . '/.git')) {
+                $commandOutput .= executeCommand('git fetch --all && git reset --hard origin/main && git pull origin main', $baseDir);
+            }
+
+            // 3. Auto-Ensure APP_KEY
             $envPath = $baseDir . '/.env';
             if (file_exists($envPath)) {
                 $content = file_get_contents($envPath);
@@ -127,33 +144,19 @@ if ($isAuthenticated && $activeAction) {
                 }
             }
 
-            // 1. Git pull
-            if (is_dir($baseDir . '/.git')) {
-                $commandOutput .= executeCommand('git fetch --all && git reset --hard origin/main && git pull origin main', $baseDir);
-            }
-            
-            // 2. Storage link
+            // 4. Storage link
             $commandOutput .= executeCommand('php artisan storage:link', $baseDir);
             
-            // 3. Migrate database
+            // 5. Migrate database
             $commandOutput .= executeCommand('php artisan migrate --force', $baseDir);
 
-            // 4. Seed database (Initial admin, default settings, etc.)
+            // 6. Seed database (Initial admin, default settings, etc.)
             $commandOutput .= executeCommand('php artisan db:seed --force', $baseDir);
             
-            // 5. Cache & Optimize
+            // 7. Clear & Optimize
             $commandOutput .= executeCommand('php artisan optimize:clear', $baseDir);
-            $commandOutput .= executeCommand('php artisan config:cache', $baseDir);
-            $commandOutput .= executeCommand('php artisan route:cache', $baseDir);
-            $commandOutput .= executeCommand('php artisan view:cache', $baseDir);
             
-            // 6. Fix permissions
-            if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
-                $commandOutput .= executeCommand('chmod -R 775 storage bootstrap/cache', $baseDir);
-                $commandOutput .= executeCommand('chmod -R 777 storage/logs storage/framework 2>/dev/null || true', $baseDir);
-            }
-            
-            $commandOutput .= "<h4 class='text-success'>🎉 DEPLOYMENT PENUH SELESAI DENGAN SUKSES! Silakan buka web Anda.</h4>";
+            $commandOutput .= "<h4 class='text-success'>🎉 DEPLOYMENT PENUH SELESAI DENGAN SUKSES! Silakan refresh web Anda.</h4>";
             break;
 
         case 'git_pull':
@@ -399,6 +402,21 @@ if ($hasEnv) {
         } catch (Exception $e) {
             $dbStatus = 'error';
             $dbErrorMsg = $e->getMessage();
+        }
+    }
+}
+
+// Baca error terakhir dari laravel.log jika ada
+$lastErrorMsg = '';
+if (file_exists($baseDir . '/storage/logs/laravel.log')) {
+    $logLines = @file($baseDir . '/storage/logs/laravel.log');
+    if ($logLines) {
+        $recent = array_slice($logLines, -150);
+        foreach (array_reverse($recent) as $line) {
+            if (stripos($line, '.ERROR:') !== false) {
+                $lastErrorMsg = trim($line);
+                break;
+            }
         }
     }
 }
@@ -738,6 +756,21 @@ $currentOS = PHP_OS;
             <p style="font-size: 11px; color: #64748b; margin-top: 14px;">Default Key: <code>livasya2026</code> (dapat diubah di file <code>setup-deploy.php</code>)</p>
         </div>
     <?php else: ?>
+
+        <?php if ($lastErrorMsg): ?>
+            <!-- Recent Server Error Banner -->
+            <div style="background: rgba(239, 68, 68, 0.12); border: 1px solid #ef4444; border-radius: 16px; padding: 18px 22px; margin-bottom: 24px; box-shadow: 0 4px 20px rgba(239, 68, 68, 0.15);">
+                <div style="color: #f87171; font-weight: 800; font-size: 14px; margin-bottom: 6px; display: flex; align-items: center; gap: 8px;">
+                    <span>⚠️</span> PESAN ERROR TERAKHIR DI SERVER (laravel.log):
+                </div>
+                <div style="color: #fecaca; font-family: 'JetBrains Mono', monospace; font-size: 12px; word-break: break-word; line-height: 1.5; max-height: 120px; overflow-y: auto;">
+                    <?= htmlspecialchars($lastErrorMsg) ?>
+                </div>
+                <div style="margin-top: 10px; font-size: 11px; color: #94a3b8;">
+                    💡 <em>Klik tombol <b>⚡ JALANKAN FULL AUTO DEPLOY SEKARANG</b> di bawah untuk membuat tabel database dan memperbaiki izin folder.</em>
+                </div>
+            </div>
+        <?php endif; ?>
 
         <!-- Diagnostic & System Summary -->
         <div class="grid-2">
