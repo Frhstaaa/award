@@ -1,0 +1,10 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Allow direct access to setup-deploy.php if called at root
+    RewriteRule ^setup-deploy\.php$ public/setup-deploy.php [L]
+
+    # Rewrite all other traffic to /public
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>

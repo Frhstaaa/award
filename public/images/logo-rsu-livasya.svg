@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 60" width="240" height="60" fill="none">
+    <defs>
+        <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#FFE27A" />
+            <stop offset="50%" stop-color="#D4AF37" />
+            <stop offset="100%" stop-color="#996515" />
+        </linearGradient>
+        <linearGradient id="emeraldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#34D399" />
+            <stop offset="100%" stop-color="#059669" />
+        </linearGradient>
+    </defs>
+    
+    <!-- Emblem Box -->
+    <g transform="translate(6, 6)">
+        <rect width="48" height="48" rx="12" fill="#070b14" stroke="url(#goldGrad)" stroke-width="1.5"/>
+        <circle cx="24" cy="24" r="18" stroke="url(#goldGrad)" stroke-width="1" stroke-dasharray="3 2" opacity="0.8"/>
+        
+        <!-- Cross -->
+        <path d="M21 11h6v10h10v6H27v10h-6V27H11v-6h10V11z" fill="url(#emeraldGrad)" stroke="url(#goldGrad)" stroke-width="1"/>
+        
+        <!-- Center Star -->
+        <circle cx="24" cy="24" r="3.5" fill="#070b14" stroke="url(#goldGrad)" stroke-width="1"/>
+        <polygon points="24,22 24.8,23.6 26.5,23.8 25.2,25 25.6,26.7 24,25.8 22.4,26.7 22.8,25 21.5,23.8 23.2,23.6" fill="url(#goldGrad)"/>
+    </g>
+
+    <!-- Typography -->
+    <text x="66" y="28" fill="url(#goldGrad)" font-family="system-ui, -apple-system, sans-serif" font-size="17" font-weight="900" letter-spacing="1.5">RSU LIVASYA</text>
+    <text x="66" y="44" fill="#94A3B8" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600" letter-spacing="2">AWARDS CEREMONY 2026</text>
+</svg>
