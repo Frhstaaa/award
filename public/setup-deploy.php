@@ -218,6 +218,56 @@ if ($isAuthenticated && $activeAction) {
             }
             break;
 
+        case 'apply_prod_env':
+            $envPath = $baseDir . '/.env';
+            $prodEnv = "APP_NAME=\"RSU Livasya Awards\"\n" .
+                "APP_ENV=production\n" .
+                "APP_KEY=base64:0UVyB1d6RYVyiALlhTjG4bRgCcqKWuJ1NH/S6dLANVE=\n" .
+                "APP_DEBUG=false\n" .
+                "APP_URL=https://livasya-award.frahesta.com\n\n" .
+                "APP_LOCALE=id\n" .
+                "APP_FALLBACK_LOCALE=en\n" .
+                "APP_FAKER_LOCALE=id_ID\n\n" .
+                "BCRYPT_ROUNDS=12\n\n" .
+                "LOG_CHANNEL=stack\n" .
+                "LOG_STACK=single\n" .
+                "LOG_DEPRECATIONS_CHANNEL=null\n" .
+                "LOG_LEVEL=error\n\n" .
+                "DB_CONNECTION=mysql\n" .
+                "DB_HOST=127.0.0.1\n" .
+                "DB_PORT=3306\n" .
+                "DB_DATABASE=liva_awarddb\n" .
+                "DB_USERNAME=liva_awarddb\n" .
+                "DB_PASSWORD=tfrahesta\n\n" .
+                "SESSION_DRIVER=database\n" .
+                "SESSION_LIFETIME=120\n" .
+                "SESSION_ENCRYPT=false\n" .
+                "SESSION_PATH=/\n" .
+                "SESSION_DOMAIN=null\n\n" .
+                "BROADCAST_CONNECTION=log\n" .
+                "FILESYSTEM_DISK=public\n" .
+                "QUEUE_CONNECTION=database\n\n" .
+                "CACHE_STORE=database\n" .
+                "CACHE_PREFIX=livasya_award_cache_\n\n" .
+                "MEMCACHED_HOST=127.0.0.1\n\n" .
+                "REDIS_CLIENT=phpredis\n" .
+                "REDIS_HOST=127.0.0.1\n" .
+                "REDIS_PASSWORD=null\n" .
+                "REDIS_PORT=6379\n\n" .
+                "MAIL_MAILER=log\n" .
+                "MAIL_HOST=127.0.0.1\n" .
+                "MAIL_PORT=2525\n" .
+                "MAIL_USERNAME=null\n" .
+                "MAIL_PASSWORD=null\n" .
+                "MAIL_ENCRYPTION=null\n" .
+                "MAIL_FROM_ADDRESS=\"no-reply@livasya-award.frahesta.com\"\n" .
+                "MAIL_FROM_NAME=\"\${APP_NAME}\"\n\n" .
+                "VITE_APP_NAME=\"\${APP_NAME}\"\n";
+            file_put_contents($envPath, $prodEnv);
+            $commandOutput .= "<h4 class='text-success'>✅ Konfigurasi .env Produksi Berhasil Diterapkan ke livasya-award.frahesta.com!</h4>\n";
+            $commandOutput .= "<div style='font-size:12px;color:#cbd5e1;'>DB: <b>liva_awarddb</b> | User: <b>liva_awarddb</b> | URL: <b>https://livasya-award.frahesta.com</b></div>\n";
+            break;
+
         case 'copy_env':
             if (!file_exists($baseDir . '/.env') && file_exists($baseDir . '/.env.example')) {
                 copy($baseDir . '/.env.example', $baseDir . '/.env');
@@ -815,6 +865,12 @@ $currentOS = PHP_OS;
                 <form method="POST">
                     <input type="hidden" name="action" value="test_db">
                     <button type="submit" class="btn btn-dark" style="width: 100%;">🔌 Test Koneksi Database</button>
+                </form>
+
+                <!-- Apply Production .ENV -->
+                <form method="POST">
+                    <input type="hidden" name="action" value="apply_prod_env">
+                    <button type="submit" class="btn btn-gold" style="width: 100%;" onclick="return confirm('Terapkan konfigurasi .env resmi untuk livasya-award.frahesta.com?');">⚙️ Terapkan .ENV Produksi Otomatis</button>
                 </form>
 
                 <!-- Fix Permissions -->
