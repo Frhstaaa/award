@@ -167,9 +167,79 @@ if ($isAuthenticated && $activeAction) {
             $commandOutput .= executeCommand('php artisan key:generate --force', $baseDir);
             break;
 
+        case 'copy_env':
+            if (!file_exists($baseDir . '/.env') && file_exists($baseDir . '/.env.example')) {
+                copy($baseDir . '/.env.example', $baseDir . '/.env');
+                $commandOutput .= "<h4 class='text-success'>✅ Berhasil menyalin .env.example menjadi .env!</h4>\n";
+            } elseif (file_exists($baseDir . '/.env')) {
+                $commandOutput .= "<h4 class='text-gold'>ℹ️ File .env sudah ada. Tidak ditimpa.</h4>\n";
+            } else {
+                $commandOutput .= "<h4 class='text-danger'>❌ File .env.example tidak ditemukan!</h4>\n";
+            }
+            break;
+
+        case 'toggle_debug':
+            $envPath = $baseDir . '/.env';
+            if (file_exists($envPath)) {
+                $content = file_get_contents($envPath);
+                if (preg_match('/APP_DEBUG=true/i', $content)) {
+                    $content = preg_replace('/APP_DEBUG=true/i', 'APP_DEBUG=false', $content);
+                    file_put_contents($envPath, $content);
+                    $commandOutput .= "<h4 class='text-warning'>🔧 APP_DEBUG diubah menjadi: FALSE (Mode Produksi Aman)</h4>\n";
+                } else {
+                    $content = preg_replace('/APP_DEBUG=false/i', 'APP_DEBUG=true', $content);
+                    file_put_contents($envPath, $content);
+                    $commandOutput .= "<h4 class='text-success'>🐞 APP_DEBUG diubah menjadi: TRUE (Mode Debug Aktif)!</h4>\n<p style='font-size:12px;color:#cbd5e1;'>Silakan refresh halaman website Anda sekarang. Pesan error 500 akan berganti menjadi penjelasan error detail lengkap dengan nomor baris.</p>\n";
+                }
+            } else {
+                $commandOutput .= "<h4 class='text-danger'>❌ File .env belum dibuat! Buat atau salin dari .env.example terlebih dahulu.</h4>\n";
+            }
+            break;
+
+        case 'view_log':
+            $logPath = $baseDir . '/storage/logs/laravel.log';
+            if (file_exists($logPath)) {
+                $lines = file($logPath);
+                $totalLines = count($lines);
+                $slice = array_slice($lines, max(0, $totalLines - 120));
+                $commandOutput .= "<h4 class='text-gold'>📜 120 Baris Terakhir dari storage/logs/laravel.log:</h4>\n";
+                $commandOutput .= "<div style='font-size:11px;line-height:1.5;color:#f87171;background:rgba(0,0,0,0.6);padding:12px;border-radius:8px;max-height:400px;overflow-y:auto;'>" . htmlspecialchars(implode('', $slice)) . "</div>\n";
+            } else {
+                $commandOutput .= "<h4 class='text-warning'>ℹ️ File log storage/logs/laravel.log belum ada atau belum ada error yang tercatat di log.</h4>\n";
+            }
+            break;
+
+        case 'test_db':
+            $envPath = $baseDir . '/.env';
+            if (file_exists($envPath)) {
+                $envVars = @parse_ini_file($envPath);
+                $dbHost = $envVars['DB_HOST'] ?? '127.0.0.1';
+                $dbPort = $envVars['DB_PORT'] ?? '3306';
+                $dbName = $envVars['DB_DATABASE'] ?? '';
+                $dbUser = $envVars['DB_USERNAME'] ?? '';
+                $dbPass = $envVars['DB_PASSWORD'] ?? '';
+
+                $commandOutput .= "<h4 class='text-info'>🔌 Menguji Koneksi Database MySQL...</h4>";
+                $commandOutput .= "<div style='font-size:12px;color:#94a3b8;margin-bottom:8px;'>Host: <b>$dbHost:$dbPort</b> | DB: <b>$dbName</b> | User: <b>$dbUser</b></div>";
+                try {
+                    $pdo = new PDO("mysql:host=$dbHost;port=$dbPort;dbname=$dbName", $dbUser, $dbPass, [
+                        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                        PDO::ATTR_TIMEOUT => 5
+                    ]);
+                    $commandOutput .= "<div class='text-success' style='font-size:14px;font-weight:bold;'>✅ KONEKSI DATABASE BERHASIL! Database siap digunakan oleh Laravel.</div>\n";
+                } catch (Exception $e) {
+                    $commandOutput .= "<div class='text-danger' style='font-size:13px;font-weight:bold;'>❌ KONEKSI DATABASE GAGAL: " . htmlspecialchars($e->getMessage()) . "</div>\n";
+                    $commandOutput .= "<div style='font-size:12px;color:#cbd5e1;margin-top:6px;'>Pastikan Database dan User telah dibuat di menu <b>Databases -> Create Database</b> CyberPanel, serta password di <code>.env</code> sudah benar.</div>\n";
+                }
+            } else {
+                $commandOutput .= "<h4 class='text-danger'>❌ File .env tidak ditemukan!</h4>\n";
+            }
+            break;
+
         case 'fix_permissions':
             if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
                 $commandOutput .= executeCommand('chmod -R 775 storage bootstrap/cache', $baseDir);
+                $commandOutput .= executeCommand('chmod -R 777 storage/framework storage/logs 2>/dev/null || true', $baseDir);
                 $commandOutput .= executeCommand('chown -R ' . get_current_user() . ':' . get_current_user() . ' storage bootstrap/cache 2>/dev/null || true', $baseDir);
             } else {
                 $commandOutput .= "Sistem operasi Windows terdeteksi. Permissions chmod tidak diperlukan.\n";
@@ -192,11 +262,15 @@ if ($isAuthenticated && $activeAction) {
 
 // Status sistem diagnostik
 $hasEnv = file_exists($baseDir . '/.env');
+$envContent = $hasEnv ? file_get_contents($baseDir . '/.env') : '';
+$hasAppKey = preg_match('/APP_KEY=base64:[A-Za-z0-9+\/=]{20,}/', $envContent);
+$isDebugOn = preg_match('/APP_DEBUG=true/i', $envContent);
 $hasVendor = is_dir($baseDir . '/vendor');
 $hasBuild = is_dir($baseDir . '/public/build');
 $hasStorageLink = file_exists($baseDir . '/public/storage');
 $isStorageWritable = is_writable($baseDir . '/storage');
 $isCacheWritable = is_writable($baseDir . '/bootstrap/cache');
+$hasLogFile = file_exists($baseDir . '/storage/logs/laravel.log');
 $phpVersion = PHP_VERSION;
 $currentOS = PHP_OS;
 ?>
@@ -553,6 +627,18 @@ $currentOS = PHP_OS;
                     </span>
                 </div>
                 <div class="diag-row">
+                    <span>Encryption Key (APP_KEY)</span>
+                    <span class="badge <?= $hasAppKey ? 'badge-success' : 'badge-danger' ?>">
+                        <?= $hasAppKey ? 'Terpasang (OK)' : 'KOSONG! Klik Generate Key' ?>
+                    </span>
+                </div>
+                <div class="diag-row">
+                    <span>Mode Debug (APP_DEBUG)</span>
+                    <span class="badge <?= $isDebugOn ? 'badge-warning' : 'badge-info' ?>">
+                        <?= $isDebugOn ? 'Aktif (Mode Debug)' : 'Nonaktif (Mode Produksi)' ?>
+                    </span>
+                </div>
+                <div class="diag-row">
                     <span>Folder Vendor (Composer)</span>
                     <span class="badge <?= $hasVendor ? 'badge-success' : 'badge-warning' ?>">
                         <?= $hasVendor ? 'Tersedia' : 'Belum Ada (Jalankan Composer)' ?>
@@ -602,20 +688,38 @@ $currentOS = PHP_OS;
 
         <!-- Individual Action Buttons -->
         <div class="card">
-            <div class="card-header">🛠️ Eksekusi Perintah Individual</div>
-            <p style="font-size: 12px; color: var(--text-muted);">Jalankan perintah khusus secara terpisah sesuai kebutuhan troubleshooting:</p>
+            <div class="card-header">🛠️ Eksekusi Perintah & Solusi Masalah (Troubleshooting)</div>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">Jalankan perintah khusus secara terpisah jika terjadi kendala / error 500 pada website:</p>
             
             <div class="btn-grid">
                 <!-- Git Pull -->
                 <form method="POST">
                     <input type="hidden" name="action" value="git_pull">
-                    <button type="submit" class="btn btn-dark" style="width: 100%;">📥 Git Pull (GitHub Update)</button>
+                    <button type="submit" class="btn btn-dark" style="width: 100%;">📥 Git Pull (Update Kode)</button>
+                </form>
+
+                <!-- Key Generate -->
+                <form method="POST">
+                    <input type="hidden" name="action" value="key_generate">
+                    <button type="submit" class="btn btn-dark" style="width: 100%; border-color: <?= $hasAppKey ? 'var(--border-muted)' : 'var(--danger)' ?>;" onclick="return confirm('Generate APP_KEY baru?');">🔑 Generate APP_KEY <?= $hasAppKey ? '' : '⚠️ (Wajib!)' ?></button>
                 </form>
 
                 <!-- Migrate Database -->
                 <form method="POST">
                     <input type="hidden" name="action" value="migrate">
                     <button type="submit" class="btn btn-dark" style="width: 100%;">🗄️ php artisan migrate</button>
+                </form>
+
+                <!-- Test Database Connection -->
+                <form method="POST">
+                    <input type="hidden" name="action" value="test_db">
+                    <button type="submit" class="btn btn-dark" style="width: 100%;">🔌 Test Koneksi Database</button>
+                </form>
+
+                <!-- Fix Permissions -->
+                <form method="POST">
+                    <input type="hidden" name="action" value="fix_permissions">
+                    <button type="submit" class="btn btn-dark" style="width: 100%;">🔒 Fix Chmod 775 Permissions</button>
                 </form>
 
                 <!-- Storage Link -->
@@ -630,6 +734,18 @@ $currentOS = PHP_OS;
                     <button type="submit" class="btn btn-dark" style="width: 100%;">🧹 Clear & Rebuild Cache</button>
                 </form>
 
+                <!-- Toggle APP_DEBUG -->
+                <form method="POST">
+                    <input type="hidden" name="action" value="toggle_debug">
+                    <button type="submit" class="btn btn-dark" style="width: 100%;">🐞 Toggle Debug (<?= $isDebugOn ? 'Matikan' : 'Aktifkan' ?> Error 500 Detail)</button>
+                </form>
+
+                <!-- View Error Log -->
+                <form method="POST">
+                    <input type="hidden" name="action" value="view_log">
+                    <button type="submit" class="btn btn-dark" style="width: 100%;">📜 Lihat Log Error (laravel.log)</button>
+                </form>
+
                 <!-- Composer Install -->
                 <form method="POST">
                     <input type="hidden" name="action" value="composer_install">
@@ -642,17 +758,13 @@ $currentOS = PHP_OS;
                     <button type="submit" class="btn btn-dark" style="width: 100%;">⚡ npm run build</button>
                 </form>
 
-                <!-- Key Generate -->
+                <?php if (!$hasEnv): ?>
+                <!-- Copy .env -->
                 <form method="POST">
-                    <input type="hidden" name="action" value="key_generate">
-                    <button type="submit" class="btn btn-dark" style="width: 100%;" onclick="return confirm('Generate APP_KEY baru? Pastikan Anda yakin.');">🔑 php artisan key:generate</button>
+                    <input type="hidden" name="action" value="copy_env">
+                    <button type="submit" class="btn btn-gold" style="width: 100%;">📄 Salin .env.example ke .env</button>
                 </form>
-
-                <!-- Fix Permissions -->
-                <form method="POST">
-                    <input type="hidden" name="action" value="fix_permissions">
-                    <button type="submit" class="btn btn-dark" style="width: 100%;">🔒 Fix Chmod 775 Permissions</button>
-                </form>
+                <?php endif; ?>
             </div>
 
             <!-- Custom Command Form -->
