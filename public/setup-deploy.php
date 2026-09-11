@@ -111,6 +111,22 @@ if ($isAuthenticated && $activeAction) {
         case 'full_deploy':
             $commandOutput .= "<h4 class='text-gold'>🚀 MEMULAI DEPLOYMENT OTOMATIS PENUH</h4>";
             
+            // 0. Auto-Ensure APP_KEY
+            $envPath = $baseDir . '/.env';
+            if (file_exists($envPath)) {
+                $content = file_get_contents($envPath);
+                if (!preg_match('/^APP_KEY=base64:[A-Za-z0-9+\/=]{20,}/m', $content)) {
+                    $generatedKey = 'base64:' . base64_encode(random_bytes(32));
+                    if (preg_match('/^APP_KEY=/m', $content)) {
+                        $content = preg_replace('/^APP_KEY=.*$/m', 'APP_KEY=' . $generatedKey, $content);
+                    } else {
+                        $content = "APP_KEY={$generatedKey}\n" . $content;
+                    }
+                    file_put_contents($envPath, $content);
+                    $commandOutput .= "<div class='text-success'>🔑 APP_KEY otomatis dibuat di .env: <code>{$generatedKey}</code></div>\n";
+                }
+            }
+
             // 1. Git pull
             if (is_dir($baseDir . '/.git')) {
                 $commandOutput .= executeCommand('git fetch --all && git reset --hard origin/main && git pull origin main', $baseDir);
@@ -121,19 +137,23 @@ if ($isAuthenticated && $activeAction) {
             
             // 3. Migrate database
             $commandOutput .= executeCommand('php artisan migrate --force', $baseDir);
+
+            // 4. Seed database (Initial admin, default settings, etc.)
+            $commandOutput .= executeCommand('php artisan db:seed --force', $baseDir);
             
-            // 4. Cache & Optimize
+            // 5. Cache & Optimize
             $commandOutput .= executeCommand('php artisan optimize:clear', $baseDir);
             $commandOutput .= executeCommand('php artisan config:cache', $baseDir);
             $commandOutput .= executeCommand('php artisan route:cache', $baseDir);
             $commandOutput .= executeCommand('php artisan view:cache', $baseDir);
             
-            // 5. Fix permissions
+            // 6. Fix permissions
             if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
                 $commandOutput .= executeCommand('chmod -R 775 storage bootstrap/cache', $baseDir);
+                $commandOutput .= executeCommand('chmod -R 777 storage/logs storage/framework 2>/dev/null || true', $baseDir);
             }
             
-            $commandOutput .= "<h4 class='text-success'>🎉 DEPLOYMENT PENUH SELESAI DENGAN SUKSES!</h4>";
+            $commandOutput .= "<h4 class='text-success'>🎉 DEPLOYMENT PENUH SELESAI DENGAN SUKSES! Silakan buka web Anda.</h4>";
             break;
 
         case 'git_pull':
@@ -146,6 +166,10 @@ if ($isAuthenticated && $activeAction) {
 
         case 'migrate':
             $commandOutput .= executeCommand('php artisan migrate --force', $baseDir);
+            break;
+
+        case 'seed':
+            $commandOutput .= executeCommand('php artisan db:seed --force', $baseDir);
             break;
 
         case 'cache_clear':
@@ -296,8 +320,39 @@ $hasVendor = is_dir($baseDir . '/vendor');
 $hasBuild = is_dir($baseDir . '/public/build');
 $hasStorageLink = file_exists($baseDir . '/public/storage');
 $isStorageWritable = is_writable($baseDir . '/storage');
+$isLogsWritable = is_dir($baseDir . '/storage/logs') && is_writable($baseDir . '/storage/logs');
+$isFrameworkWritable = is_dir($baseDir . '/storage/framework/views') && is_writable($baseDir . '/storage/framework/views');
 $isCacheWritable = is_writable($baseDir . '/bootstrap/cache');
 $hasLogFile = file_exists($baseDir . '/storage/logs/laravel.log');
+
+// Test DB Status & Table Count
+$dbStatus = 'unknown';
+$dbTableCount = 0;
+$dbErrorMsg = '';
+if ($hasEnv) {
+    $envVars = @parse_ini_file($baseDir . '/.env');
+    $dbHost = $envVars['DB_HOST'] ?? '127.0.0.1';
+    $dbPort = $envVars['DB_PORT'] ?? '3306';
+    $dbName = $envVars['DB_DATABASE'] ?? '';
+    $dbUser = $envVars['DB_USERNAME'] ?? '';
+    $dbPass = $envVars['DB_PASSWORD'] ?? '';
+    if ($dbName && $dbUser) {
+        try {
+            $pdo = new PDO("mysql:host=$dbHost;port=$dbPort;dbname=$dbName", $dbUser, $dbPass, [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_TIMEOUT => 3
+            ]);
+            $stmt = $pdo->query("SHOW TABLES");
+            $tables = $stmt->fetchAll(PDO::FETCH_COLUMN);
+            $dbTableCount = count($tables);
+            $dbStatus = 'connected';
+        } catch (Exception $e) {
+            $dbStatus = 'error';
+            $dbErrorMsg = $e->getMessage();
+        }
+    }
+}
+
 $phpVersion = PHP_VERSION;
 $currentOS = PHP_OS;
 ?>
@@ -684,9 +739,21 @@ $currentOS = PHP_OS;
                     </span>
                 </div>
                 <div class="diag-row">
-                    <span>Izin Tulis /storage</span>
-                    <span class="badge <?= $isStorageWritable ? 'badge-success' : 'badge-danger' ?>">
-                        <?= $isStorageWritable ? 'Writable (775/777)' : 'Not Writable' ?>
+                    <span>Koneksi Database MySQL</span>
+                    <?php if ($dbStatus === 'connected'): ?>
+                        <span class="badge <?= $dbTableCount > 0 ? 'badge-success' : 'badge-warning' ?>">
+                            <?= $dbTableCount > 0 ? "Tersambung ({$dbTableCount} Tabel)" : 'Tersambung (0 Tabel - Perlu Migrate!)' ?>
+                        </span>
+                    <?php elseif ($dbStatus === 'error'): ?>
+                        <span class="badge badge-danger" title="<?= htmlspecialchars($dbErrorMsg) ?>">Gagal Terhubung (Cek .env)</span>
+                    <?php else: ?>
+                        <span class="badge badge-warning">Belum Dikonfigurasi</span>
+                    <?php endif; ?>
+                </div>
+                <div class="diag-row">
+                    <span>Izin Tulis /storage & logs</span>
+                    <span class="badge <?= ($isStorageWritable && $isLogsWritable && $isFrameworkWritable) ? 'badge-success' : 'badge-danger' ?>">
+                        <?= ($isStorageWritable && $isLogsWritable && $isFrameworkWritable) ? 'Writable (775/777)' : 'Terkunci! (Klik Fix Permissions)' ?>
                     </span>
                 </div>
             </div>
@@ -700,8 +767,9 @@ $currentOS = PHP_OS;
                         <br>1. <code>git pull origin main</code>
                         <br>2. <code>php artisan storage:link</code>
                         <br>3. <code>php artisan migrate --force</code>
-                        <br>4. <code>php artisan optimize:clear & cache</code>
-                        <br>5. <code>chmod permissions storage</code>
+                        <br>4. <code>php artisan db:seed --force</code>
+                        <br>5. <code>php artisan optimize:clear & cache</code>
+                        <br>6. <code>chmod permissions storage</code>
                     </p>
                 </div>
                 <form method="POST" style="margin-top: 16px;">
@@ -735,6 +803,12 @@ $currentOS = PHP_OS;
                 <form method="POST">
                     <input type="hidden" name="action" value="migrate">
                     <button type="submit" class="btn btn-dark" style="width: 100%;">🗄️ php artisan migrate</button>
+                </form>
+
+                <!-- Seed Database -->
+                <form method="POST">
+                    <input type="hidden" name="action" value="seed">
+                    <button type="submit" class="btn btn-dark" style="width: 100%;">🌱 php artisan db:seed (Data Awal)</button>
                 </form>
 
                 <!-- Test Database Connection -->
