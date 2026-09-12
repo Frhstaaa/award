@@ -312,7 +312,7 @@
     ]
   },
   "resources/js/Pages/Public/Partials/SuspenseSlide.jsx": {
-    "file": "assets/SuspenseSlide-xKA3dWZ-.js",
+    "file": "assets/SuspenseSlide-6C-I-w8d.js",
     "name": "SuspenseSlide",
     "src": "resources/js/Pages/Public/Partials/SuspenseSlide.jsx",
     "isDynamicEntry": true,
@@ -344,7 +344,7 @@
     ]
   },
   "resources/js/Pages/Public/Showcase.jsx": {
-    "file": "assets/Showcase-C3Sy7Ga8.js",
+    "file": "assets/Showcase-Co0TU49h.js",
     "name": "Showcase",
     "src": "resources/js/Pages/Public/Showcase.jsx",
     "isDynamicEntry": true,
@@ -371,7 +371,7 @@
     ]
   },
   "resources/js/app.jsx": {
-    "file": "assets/app-d3Arfsul.js",
+    "file": "assets/app-DDqLn1Lu.js",
     "name": "app",
     "src": "resources/js/app.jsx",
     "isEntry": true,
@@ -406,7 +406,7 @@
       "resources/js/Pages/Welcome.jsx"
     ],
     "css": [
-      "assets/app-BmTpzaan.css"
+      "assets/app-C5sEogQ9.css"
     ]
   }
 }

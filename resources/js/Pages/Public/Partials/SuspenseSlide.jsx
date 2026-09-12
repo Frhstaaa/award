@@ -5,23 +5,29 @@ import { motion } from 'framer-motion';
 export default function SuspenseSlide({ categoryName, nominees = [], isCountingDown = false }) {
     const count = nominees.length;
 
-    // Card width dynamically tuned so nominees are always tightly grouped and centered
+    // Card width tuned for up to 4 cards per row with optimal aesthetic balance
     const getCardWidthClass = () => {
-        if (count <= 2) return 'w-44 sm:w-52 md:w-56';
+        if (count <= 2) return 'w-48 sm:w-56 md:w-64';
         if (count === 3) return 'w-40 sm:w-48 md:w-52';
-        if (count === 4) return 'w-36 sm:w-44 md:w-48';
-        if (count <= 6) return 'w-32 sm:w-36 md:w-40';
-        if (count <= 8) return 'w-28 sm:w-32 md:w-36';
-        return 'w-24 sm:w-28 md:w-32';
+        if (count === 4) return 'w-36 sm:w-40 md:w-46 lg:w-52';
+        // For count > 4 (e.g. 5-8), cards are organized in rows of max 4
+        return 'w-[calc(50%-0.5rem)] sm:w-36 md:w-42 lg:w-48 xl:w-52';
     };
 
     // Photo size adjustment for visual harmony and zero-scroll viewport balance
     const getPhotoSizeClass = () => {
-        if (count <= 3) return 'w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28';
-        if (count === 4) return 'w-18 h-18 sm:w-22 sm:h-22 md:w-24 md:h-24';
-        if (count <= 6) return 'w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20';
-        return 'w-14 h-14 sm:w-16 sm:h-16 md:w-18 md:h-18';
+        if (count <= 2) return 'w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28';
+        if (count === 3) return 'w-18 h-18 sm:w-22 sm:h-22 md:w-24 md:h-24';
+        if (count === 4) return 'w-16 h-16 sm:w-20 sm:h-20 md:w-22 md:h-22';
+        return 'w-14 h-14 sm:w-16 sm:h-16 md:w-18 md:h-18 lg:w-20 lg:h-20';
     };
+
+    // Split nominees into rows with a maximum of 4 candidates per row
+    const MAX_PER_ROW = 4;
+    const chunkedNominees = [];
+    for (let i = 0; i < nominees.length; i += MAX_PER_ROW) {
+        chunkedNominees.push(nominees.slice(i, i + MAX_PER_ROW));
+    }
 
     return (
         <motion.div 
@@ -70,7 +76,7 @@ export default function SuspenseSlide({ categoryName, nominees = [], isCountingD
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
-                className="flex items-center justify-center gap-2 text-slate-300 text-xs sm:text-sm font-light tracking-wide mb-4 sm:mb-6"
+                className="flex items-center justify-center gap-2 text-slate-300 text-xs sm:text-sm font-light tracking-wide mb-3 sm:mb-4"
             >
                 <span className="relative flex h-2 w-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
@@ -83,64 +89,72 @@ export default function SuspenseSlide({ categoryName, nominees = [], isCountingD
                 </span>
             </motion.div>
 
-            {/* All Nominees Candidates Gallery — ALWAYS CENTERED IN ANY COUNT */}
+            {/* All Nominees Candidates Gallery — MAX 4 PER ROW, REMAINDER ON ROW BELOW */}
             {count > 0 ? (
-                <div className="flex flex-wrap items-stretch justify-center gap-2.5 sm:gap-3.5 md:gap-4 w-full mx-auto px-2">
-                    {nominees.map((nominee, idx) => {
-                        const emp = nominee.employee || {};
+                <div className="flex flex-col items-center justify-center gap-2.5 sm:gap-3.5 md:gap-4 w-full mx-auto px-2">
+                    {chunkedNominees.map((row, rowIdx) => (
+                        <div 
+                            key={`row-${rowIdx}`}
+                            className="flex flex-wrap sm:flex-nowrap items-stretch justify-center gap-2.5 sm:gap-3.5 md:gap-4 w-full"
+                        >
+                            {row.map((nominee, colIdx) => {
+                                const globalIdx = rowIdx * MAX_PER_ROW + colIdx;
+                                const emp = nominee.employee || {};
 
-                        return (
-                            <motion.div
-                                key={nominee.id || idx}
-                                initial={{ opacity: 0, y: 15, scale: 0.88 }}
-                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                transition={{ 
-                                    delay: 0.2 + idx * 0.06, 
-                                    duration: 0.4, 
-                                    ease: 'easeOut' 
-                                }}
-                                className={`${getCardWidthClass()} flex-shrink-0 group relative rounded-2xl bg-[#0c1224]/90 backdrop-blur-md border border-amber-500/25 hover:border-amber-400/60 p-2.5 sm:p-3 flex flex-col items-center text-center shadow-xl transition-all duration-300 hover:scale-[1.04] hover:shadow-[0_0_25px_rgba(245,158,11,0.25)]`}
-                            >
-                                {/* Nominee Number Badge */}
-                                <div className="absolute top-1.5 left-1.5 z-10 px-1.5 py-0.2 rounded-md bg-black/70 border border-amber-500/40 text-[9px] font-mono font-bold text-amber-300">
-                                    #{idx + 1}
-                                </div>
-
-                                {/* Photo Frame with Gold Gradient */}
-                                <div className={`${getPhotoSizeClass()} rounded-xl p-0.5 bg-gradient-to-tr from-amber-600 via-yellow-400 to-amber-200 shadow-md relative group-hover:shadow-gold-glow transition-shadow duration-300 mb-2 flex-shrink-0`}>
-                                    <div className="w-full h-full rounded-[10px] overflow-hidden bg-[#090e1c] relative flex items-center justify-center">
-                                        {emp.photo_url ? (
-                                            <img 
-                                                src={emp.photo_url} 
-                                                alt={emp.name || 'Nominee'} 
-                                                className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500" 
-                                            />
-                                        ) : (
-                                            <User className="w-7 h-7 sm:w-8 sm:h-8 text-slate-500" />
-                                        )}
-                                    </div>
-                                </div>
-
-                                {/* Candidate Name & Position */}
-                                <div className="w-full min-w-0 flex flex-col justify-between flex-1">
-                                    <h4 
-                                        className="text-[11px] sm:text-xs md:text-[13px] font-display font-bold text-slate-100 line-clamp-2 group-hover:text-amber-300 transition-colors leading-tight"
-                                        title={emp.name}
+                                return (
+                                    <motion.div
+                                        key={nominee.id || globalIdx}
+                                        initial={{ opacity: 0, y: 15, scale: 0.88 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        transition={{ 
+                                            delay: 0.15 + globalIdx * 0.05, 
+                                            duration: 0.4, 
+                                            ease: 'easeOut' 
+                                        }}
+                                        className={`${getCardWidthClass()} flex-shrink-0 group relative rounded-2xl bg-[#0c1224]/90 backdrop-blur-md border border-amber-500/25 hover:border-amber-400/60 p-2.5 sm:p-3 flex flex-col items-center text-center shadow-xl transition-all duration-300 hover:scale-[1.04] hover:shadow-[0_0_25px_rgba(245,158,11,0.25)]`}
                                     >
-                                        {emp.name || 'Nama Kandidat'}
-                                    </h4>
+                                        {/* Nominee Number Badge */}
+                                        <div className="absolute top-1.5 left-1.5 z-10 px-1.5 py-0.2 rounded-md bg-black/70 border border-amber-500/40 text-[9px] font-mono font-bold text-amber-300">
+                                            #{globalIdx + 1}
+                                        </div>
 
-                                    {/* Position & Department */}
-                                    <p 
-                                        className="text-[10px] text-amber-300/80 truncate mt-1 leading-tight"
-                                        title={`${emp.position || ''} - ${emp.department || ''}`}
-                                    >
-                                        {emp.position || emp.department || 'Official Nominee'}
-                                    </p>
-                                </div>
-                            </motion.div>
-                        );
-                    })}
+                                        {/* Photo Frame with Gold Gradient */}
+                                        <div className={`${getPhotoSizeClass()} rounded-xl p-0.5 bg-gradient-to-tr from-amber-600 via-yellow-400 to-amber-200 shadow-md relative group-hover:shadow-gold-glow transition-shadow duration-300 mb-2 flex-shrink-0`}>
+                                            <div className="w-full h-full rounded-[10px] overflow-hidden bg-[#090e1c] relative flex items-center justify-center">
+                                                {emp.photo_url ? (
+                                                    <img 
+                                                        src={emp.photo_url} 
+                                                        alt={emp.name || 'Nominee'} 
+                                                        className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500" 
+                                                    />
+                                                ) : (
+                                                    <User className="w-7 h-7 sm:w-8 sm:h-8 text-slate-500" />
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {/* Candidate Name & Position */}
+                                        <div className="w-full min-w-0 flex flex-col justify-between flex-1">
+                                            <h4 
+                                                className="text-[11px] sm:text-xs md:text-[13px] font-display font-bold text-slate-100 line-clamp-2 group-hover:text-amber-300 transition-colors leading-tight min-h-[2.1rem] flex items-center justify-center"
+                                                title={emp.name}
+                                            >
+                                                {emp.name || 'Nama Kandidat'}
+                                            </h4>
+
+                                            {/* Position & Department */}
+                                            <p 
+                                                className="text-[10px] sm:text-[11px] text-amber-300/80 truncate mt-1 leading-tight"
+                                                title={`${emp.position || ''} - ${emp.department || ''}`}
+                                            >
+                                                {emp.position || emp.department || 'Official Nominee'}
+                                            </p>
+                                        </div>
+                                    </motion.div>
+                                );
+                            })}
+                        </div>
+                    ))}
                 </div>
             ) : (
                 /* Fallback if category has 0 nominees registered */
