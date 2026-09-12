@@ -34,30 +34,11 @@ class AudioEngine {
         this.backsoundsMap = {};
         this.isInitialized = false;
         this.playSessionId = 0; // Incremented on each track switch to cancel stale async callbacks
-        this.countdownVoiceSounds = {};
-        this.initCountdownVoices();
-    }
-
-    initCountdownVoices() {
-        if (typeof window === 'undefined') return;
-        [3, 2, 1].forEach(num => {
-            try {
-                this.countdownVoiceSounds[num] = new Howl({
-                    src: [`/audio/countdown-${num}.mp3`],
-                    preload: true,
-                    html5: false,
-                    volume: this.isMuted ? 0 : Math.min(1, this.volume * 1.3),
-                });
-            } catch (e) {
-                console.warn(`[AudioEngine] Preload countdown voice ${num} error:`, e);
-            }
-        });
     }
 
     init(backsoundsMap = {}) {
         this.backsoundsMap = backsoundsMap;
         this.isInitialized = true;
-        this.initCountdownVoices();
     }
 
     setMuted(muted) {
@@ -299,6 +280,12 @@ class AudioEngine {
         try {
             Howler.stop();
         } catch (e) {}
+
+        if (typeof window !== 'undefined' && window.speechSynthesis) {
+            try {
+                window.speechSynthesis.cancel();
+            } catch (e) {}
+        }
     }
 
     /**
@@ -447,73 +434,13 @@ class AudioEngine {
     }
 
     /**
-     * Play human speech voice pronouncing "Tiga", "Dua", "Satu"
-     */
-    playCountdownVoice(count) {
-        if (this.isMuted) return;
-
-        // 1. Try high-definition pre-rendered audio file
-        if (this.countdownVoiceSounds && this.countdownVoiceSounds[count]) {
-            try {
-                // Stop any previous count voice immediately
-                [3, 2, 1].forEach(n => {
-                    if (this.countdownVoiceSounds[n]) {
-                        try {
-                            this.countdownVoiceSounds[n].stop();
-                        } catch (e) {}
-                    }
-                });
-
-                const sound = this.countdownVoiceSounds[count];
-                sound.volume(this.isMuted ? 0 : Math.min(1, this.volume * 1.4));
-                sound.play();
-                return;
-            } catch (e) {
-                console.warn(`[AudioEngine] Voice file error for ${count}:`, e);
-            }
-        }
-
-        // 2. Fallback to Web Speech API (Indonesian neural voice)
-        this.speakCountdownFallback(count);
-    }
-
-    /**
-     * Web Speech API fallback for counting in Indonesian (Tiga, Dua, Satu)
-     */
-    speakCountdownFallback(count) {
-        if (this.isMuted || typeof window === 'undefined' || !window.speechSynthesis) return;
-        try {
-            window.speechSynthesis.cancel();
-            const words = { 3: 'Tiga', 2: 'Dua', 1: 'Satu' };
-            const text = words[count] || String(count);
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'id-ID';
-            utterance.rate = 1.0;
-            utterance.pitch = 1.05;
-            utterance.volume = this.volume;
-
-            const voices = window.speechSynthesis.getVoices();
-            const femaleVoice = voices.find(v => (v.lang === 'id-ID' || v.lang.startsWith('id')) && (/gadis|female|perempuan|wanita/i.test(v.name)));
-            const idVoice = femaleVoice || voices.find(v => v.lang === 'id-ID' || v.lang.startsWith('id'));
-            if (idVoice) utterance.voice = idVoice;
-
-            window.speechSynthesis.speak(utterance);
-        } catch (e) {
-            console.warn('[AudioEngine] Speech synthesis fallback error:', e);
-        }
-    }
-
-    /**
-     * Play coordinated countdown sound: Human Voice ("Tiga", "Dua", "Satu")
-     * combined with cinematic sub-bass heartbeat pulse & tension chime.
+     * Play cinematic tension countdown sound: sub-bass heartbeat pulse & tension chime.
+     * (Human counting voice removed as requested)
      */
     playCountdown(count) {
         if (this.isMuted) return;
 
-        // 1. Play natural human voice counting down
-        this.playCountdownVoice(count);
-
-        // 2. Play sub-bass heartbeat pulse & tension chime
+        // Play sub-bass heartbeat pulse & tension chime SFX
         this.playCountdownBeep(count);
     }
 
