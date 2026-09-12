@@ -88,24 +88,27 @@ export default function AdminLayout({ children, title }) {
                                 key={item.route}
                                 href={route(item.route)}
                                 onClick={() => setSidebarOpen(false)}
-                                className={`group flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold tracking-wide transition-all duration-200 ${
+                                className={`group relative flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold tracking-wide transition-all duration-200 ${
                                     isActive
-                                        ? 'bg-amber-100/80 text-amber-950 border border-amber-300 shadow-sm font-bold dark:bg-gradient-to-r dark:from-amber-500/20 dark:via-yellow-500/10 dark:to-amber-500/5 dark:text-amber-300 dark:border-amber-400/40 dark:shadow-amber-500/10'
-                                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 hover:translate-x-0.5 dark:text-slate-400 dark:hover:text-slate-100 dark:hover:bg-slate-900/70'
-                                }`}
+                                        ? 'bg-amber-100/90 text-amber-950 border border-amber-300/80 shadow-sm font-bold dark:bg-[#101726] dark:bg-gradient-to-r dark:from-amber-500/20 dark:via-amber-500/10 dark:to-transparent dark:text-amber-300 dark:border-amber-400/40 dark:shadow-[0_0_15px_rgba(245,158,11,0.15)]'
+                                        : 'text-slate-600 hover:text-amber-950 hover:bg-amber-50/80 hover:translate-x-0.5 dark:text-slate-400 dark:hover:text-amber-200 dark:hover:bg-amber-500/10 dark:hover:border dark:hover:border-amber-500/20'
+                                } active:scale-[0.98]`}
                             >
+                                {isActive && (
+                                    <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full bg-amber-500 dark:bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.6)]" />
+                                )}
                                 <div className="flex items-center gap-3">
                                     <div className={`p-1.5 rounded-lg transition-colors ${
                                         isActive 
-                                            ? 'bg-amber-200 text-amber-900 dark:bg-amber-500/20 dark:text-amber-400' 
-                                            : 'bg-slate-100 text-slate-500 group-hover:text-amber-700 dark:bg-slate-900/60 dark:text-slate-400 dark:group-hover:text-amber-300'
+                                            ? 'bg-amber-200/90 text-amber-950 dark:bg-amber-500/20 dark:text-amber-300 dark:border dark:border-amber-400/30 shadow-xs' 
+                                            : 'bg-slate-100 text-slate-500 group-hover:bg-amber-100 group-hover:text-amber-800 dark:bg-slate-900/60 dark:text-slate-400 dark:group-hover:bg-amber-500/15 dark:group-hover:text-amber-300'
                                     }`}>
                                         <Icon className="w-4 h-4" />
                                     </div>
                                     <span>{item.label}</span>
                                 </div>
                                 {isActive && (
-                                    <ChevronRight className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400/80" />
+                                    <ChevronRight className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400/90" />
                                 )}
                             </Link>
                         );
