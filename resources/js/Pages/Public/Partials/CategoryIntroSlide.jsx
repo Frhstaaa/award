@@ -16,9 +16,9 @@ export default function CategoryIntroSlide({ category, categoryIndex, totalCateg
                 initial={{ opacity: 0, y: -12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.15 }}
-                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[11px] sm:text-xs font-semibold uppercase tracking-widest mb-4 shadow-sm"
+                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full royal-gold-pill text-[11px] sm:text-xs font-bold uppercase tracking-widest mb-4 shadow-sm"
             >
-                <Award className="w-3.5 h-3.5 text-amber-400" />
+                <Award className="w-3.5 h-3.5 text-amber-600 dark:text-yellow-300" />
                 <span>Kategori {categoryIndex + 1} dari {totalCategories}</span>
             </motion.div>
 
@@ -27,9 +27,9 @@ export default function CategoryIntroSlide({ category, categoryIndex, totalCateg
                 initial={{ scale: 0.85, rotate: -8 }}
                 animate={{ scale: 1, rotate: 0 }}
                 transition={{ delay: 0.25, type: 'spring', stiffness: 220 }}
-                className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-tr from-amber-600 via-yellow-400 to-amber-300 p-0.5 shadow-gold-glow mb-4"
+                className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl p-1 royal-gold-frame mb-4 shadow-md"
             >
-                <div className="w-full h-full rounded-[14px] bg-[#0c101c] flex items-center justify-center overflow-hidden">
+                <div className="w-full h-full rounded-[14px] royal-gold-avatar-bg flex items-center justify-center overflow-hidden border border-amber-400/40">
                     {category.icon_url ? (
                         <img 
                             src={category.icon_url} 
@@ -37,7 +37,7 @@ export default function CategoryIntroSlide({ category, categoryIndex, totalCateg
                             className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
                         />
                     ) : (
-                        <Sparkles className="w-8 h-8 sm:w-10 sm:h-10 text-amber-400 animate-pulse" />
+                        <Sparkles className="w-8 h-8 sm:w-10 sm:h-10 text-amber-600 dark:text-yellow-400 animate-pulse" />
                     )}
                 </div>
             </motion.div>
@@ -47,7 +47,7 @@ export default function CategoryIntroSlide({ category, categoryIndex, totalCateg
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.35 }}
-                className="text-2xl sm:text-3xl md:text-4xl font-display font-black gold-shimmer tracking-tight mb-3 leading-tight"
+                className="text-2xl sm:text-3xl md:text-5xl font-display font-black gold-title-crisp tracking-tight mb-3 leading-tight"
             >
                 {category.name}
             </motion.h2>
@@ -58,7 +58,7 @@ export default function CategoryIntroSlide({ category, categoryIndex, totalCateg
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.45 }}
-                    className="text-slate-300 text-xs sm:text-sm max-w-lg mx-auto leading-relaxed font-light mb-4 line-clamp-3"
+                    className="text-amber-900/90 dark:text-amber-100/90 text-xs sm:text-sm max-w-lg mx-auto leading-relaxed font-medium mb-4 line-clamp-3 drop-shadow-sm"
                 >
                     {category.description}
                 </motion.p>
@@ -69,10 +69,11 @@ export default function CategoryIntroSlide({ category, categoryIndex, totalCateg
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.55 }}
-                className="text-[11px] sm:text-xs text-amber-400/80 font-mono uppercase tracking-widest"
+                className="text-xs sm:text-sm text-amber-800 dark:text-yellow-300 font-mono uppercase tracking-widest font-bold drop-shadow-sm"
             >
                 ✦ Menampilkan {category.nominees ? category.nominees.length : 0} Kandidat Nominasi ✦
             </motion.div>
+
         </motion.div>
     );
 }

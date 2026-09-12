@@ -41,16 +41,16 @@ export default function WinnerRevealSlide({ winner, category }) {
             <ConfettiEffect active={showConfetti} continuous={true} />
 
             {/* Category Banner Title with Gold Pulse */}
-            <div className="text-center mb-2">
+            <div className="text-center mb-2.5">
                 <motion.div 
                     initial={{ opacity: 0, y: -8 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
-                    className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-gradient-to-r from-amber-500/25 via-yellow-400/35 to-amber-500/25 border border-amber-400/50 text-amber-300 text-[11px] sm:text-xs font-semibold tracking-widest uppercase shadow-gold-glow"
+                    className="inline-flex items-center gap-2 px-5 py-1.5 rounded-full royal-gold-pill text-xs font-black tracking-widest uppercase shadow-md"
                 >
-                    <Trophy className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
-                    <span>Pemenang Penghargaan: {category?.name}</span>
-                    <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-spin-slow" />
+                    <Trophy className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400 animate-pulse" />
+                    <span className="truncate max-w-[280px] sm:max-w-md md:max-w-xl">Pemenang Penghargaan: {category?.name}</span>
+                    <Sparkles className="w-3.5 h-3.5 text-amber-700 dark:text-yellow-300 animate-spin-slow" />
                 </motion.div>
             </div>
 
@@ -66,19 +66,15 @@ export default function WinnerRevealSlide({ winner, category }) {
                     />
                 )}
 
-                {/* Ambient Golden Stage Lighting Spotlights */}
-                <div className="absolute top-0 left-1/4 -translate-x-1/2 w-48 h-full bg-gradient-to-b from-amber-400/20 via-yellow-500/5 to-transparent blur-2xl pointer-events-none transform -rotate-12" />
-                <div className="absolute top-0 right-1/4 translate-x-1/2 w-48 h-full bg-gradient-to-b from-amber-400/20 via-yellow-500/5 to-transparent blur-2xl pointer-events-none transform rotate-12" />
-
                 {employee ? (
                     <motion.div 
                         initial={{ scale: 0.88, opacity: 0 }}
                         animate={{ scale: isCurtainOpen ? 1 : 0.88, opacity: isCurtainOpen ? 1 : 0 }}
                         transition={{ duration: 0.8, delay: 0.65, ease: 'easeOut' }}
-                        className="w-full max-w-2xl flex flex-col md:flex-row items-center gap-5 sm:gap-7 py-2 px-3 relative z-10"
+                        className="w-full max-w-4xl flex flex-col md:flex-row items-center gap-6 sm:gap-8 md:gap-12 lg:gap-14 py-2 px-3 sm:px-5 relative z-10"
                     >
-                        {/* Winner Avatar with Sunburst, Pulsing Halo, and Crown */}
-                        <div className="relative flex-shrink-0">
+                        {/* Winner Avatar Column with Dedicated Width to Fully Contain Ribbon */}
+                        <div className="relative flex-shrink-0 w-44 sm:w-48 md:w-52 flex flex-col items-center justify-center mb-6 md:mb-0">
                             {/* Rotating Conic Sunburst of Glory (Continuous 360° Ray Motion) */}
                             <motion.div
                                 animate={{ rotate: 360 }}
@@ -109,7 +105,7 @@ export default function WinnerRevealSlide({ winner, category }) {
                             <motion.div
                                 animate={{ y: [-4, 4, -4], rotate: [0, 18, 0] }}
                                 transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
-                                className="absolute -top-1 -left-2 z-20 text-yellow-300 drop-shadow-[0_0_8px_rgba(253,224,71,0.8)]"
+                                className="absolute -top-1 -left-2 z-20 text-yellow-400 drop-shadow-[0_0_8px_rgba(253,224,71,0.8)]"
                             >
                                 <Sparkles className="w-5 h-5 fill-yellow-400/40" />
                             </motion.div>
@@ -117,7 +113,7 @@ export default function WinnerRevealSlide({ winner, category }) {
                             <motion.div
                                 animate={{ y: [4, -4, 4], scale: [0.9, 1.2, 0.9] }}
                                 transition={{ repeat: Infinity, duration: 2.7, delay: 0.5, ease: 'easeInOut' }}
-                                className="absolute -top-2 -right-2 z-20 text-amber-300 drop-shadow-[0_0_8px_rgba(245,158,11,0.8)]"
+                                className="absolute -top-2 -right-2 z-20 text-amber-500 dark:text-amber-300 drop-shadow-[0_0_8px_rgba(245,158,11,0.8)]"
                             >
                                 <Star className="w-4 h-4 fill-amber-400" />
                             </motion.div>
@@ -125,7 +121,7 @@ export default function WinnerRevealSlide({ winner, category }) {
                             <motion.div
                                 animate={{ y: [-3, 3, -3], scale: [1, 1.25, 1] }}
                                 transition={{ repeat: Infinity, duration: 2.4, delay: 1, ease: 'easeInOut' }}
-                                className="absolute -bottom-1 -left-3 z-20 text-amber-400 drop-shadow-[0_0_6px_rgba(245,158,11,0.8)]"
+                                className="absolute -bottom-1 -left-3 z-20 text-amber-500 dark:text-amber-400 drop-shadow-[0_0_6px_rgba(245,158,11,0.8)]"
                             >
                                 <Star className="w-4 h-4 fill-amber-400" />
                             </motion.div>
@@ -133,7 +129,7 @@ export default function WinnerRevealSlide({ winner, category }) {
                             <motion.div
                                 animate={{ y: [3, -3, 3], rotate: [0, -20, 0] }}
                                 transition={{ repeat: Infinity, duration: 3.2, delay: 0.3, ease: 'easeInOut' }}
-                                className="absolute -bottom-1 -right-3 z-20 text-yellow-300 drop-shadow-[0_0_8px_rgba(253,224,71,0.8)]"
+                                className="absolute -bottom-1 -right-3 z-20 text-yellow-400 drop-shadow-[0_0_8px_rgba(253,224,71,0.8)]"
                             >
                                 <Sparkles className="w-4 h-4 fill-yellow-300/50" />
                             </motion.div>
@@ -145,16 +141,16 @@ export default function WinnerRevealSlide({ winner, category }) {
                                     scale: [1, 1.08, 1],
                                 }}
                                 transition={{ repeat: Infinity, duration: 2.6, ease: 'easeInOut' }}
-                                className="absolute -top-4 left-1/2 -translate-x-1/2 z-30 w-9 h-9 rounded-full bg-gradient-to-tr from-amber-500 via-yellow-300 to-amber-400 p-0.5 shadow-[0_0_15px_rgba(245,158,11,0.8)] flex items-center justify-center"
+                                className="absolute -top-4 left-1/2 -translate-x-1/2 z-30 w-10 h-10 rounded-full bg-gradient-to-tr from-amber-500 via-yellow-300 to-amber-400 p-0.5 shadow-[0_0_15px_rgba(245,158,11,0.8)] flex items-center justify-center"
                             >
-                                <div className="w-full h-full rounded-full bg-[#080c18] flex items-center justify-center">
-                                    <Crown className="w-4 h-4 text-amber-400 fill-amber-400/40" />
+                                <div className="w-full h-full rounded-full bg-amber-50 dark:bg-[#080c18] flex items-center justify-center border border-amber-300/60 shadow-sm">
+                                    <Crown className="w-5 h-5 text-amber-600 dark:text-amber-400 fill-amber-500/40" />
                                 </div>
                             </motion.div>
 
                             {/* Outer Golden Border Circle with Metallic Glow */}
                             <div className="w-28 h-28 sm:w-36 sm:h-36 md:w-40 md:h-40 rounded-full p-1.5 bg-gradient-to-tr from-amber-600 via-yellow-300 to-amber-500 shadow-[0_0_25px_rgba(245,158,11,0.6)] relative z-10">
-                                <div className="w-full h-full rounded-full overflow-hidden bg-[#070b14] relative border-2 border-amber-300/40">
+                                <div className="w-full h-full rounded-full overflow-hidden bg-amber-100/90 dark:bg-[#070b14] relative border-2 border-amber-300/60 shadow-inner">
                                     {employee.photo_url ? (
                                         <img 
                                             src={employee.photo_url} 
@@ -162,72 +158,72 @@ export default function WinnerRevealSlide({ winner, category }) {
                                             className="w-full h-full object-cover object-top filter contrast-[1.05]" 
                                         />
                                     ) : (
-                                        <div className="w-full h-full flex items-center justify-center text-slate-600">
-                                            <User className="w-14 h-14" />
+                                        <div className="w-full h-full flex items-center justify-center text-amber-700/60 dark:text-slate-600">
+                                            <User className="w-16 h-16" />
                                         </div>
                                     )}
                                 </div>
                             </div>
 
-                            {/* Grand Winner Ribbon Banner with Glowing Shimmer */}
+                            {/* Grand Winner Ribbon Banner - Safely Contained Inside Column Width */}
                             <motion.div 
                                 animate={{ scale: [1, 1.04, 1] }}
                                 transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
-                                className="absolute -bottom-3 left-1/2 -translate-x-1/2 z-20 px-4 py-1 rounded-full bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 text-black font-display font-black text-[10px] sm:text-xs uppercase tracking-widest shadow-[0_0_18px_rgba(245,158,11,0.8)] whitespace-nowrap flex items-center gap-1.5 border border-yellow-200"
+                                className="absolute -bottom-3.5 left-1/2 -translate-x-1/2 z-20 px-3.5 sm:px-4 py-1 rounded-full bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 text-amber-950 font-display font-black text-[10px] sm:text-xs uppercase tracking-widest shadow-[0_4px_16px_rgba(0,0,0,0.25),0_0_18px_rgba(245,158,11,0.8)] whitespace-nowrap flex items-center gap-1.5 border-2 border-yellow-100"
                             >
-                                <Star className="w-3.5 h-3.5 fill-black" />
-                                <span className="font-extrabold tracking-wider">JUARA UTAMA</span>
-                                <Star className="w-3.5 h-3.5 fill-black" />
+                                <Star className="w-3 h-3 fill-amber-950 text-amber-950" />
+                                <span className="font-black tracking-wider">JUARA UTAMA</span>
+                                <Star className="w-3 h-3 fill-amber-950 text-amber-950" />
                             </motion.div>
                         </div>
 
                         {/* Winner Information & Festivity Details */}
-                        <div className="text-center md:text-left space-y-2 flex-1 mt-3 md:mt-0">
+                        <div className="text-center md:text-left space-y-2.5 flex-1 min-w-0">
                             <div>
-                                <div className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] text-amber-300 font-mono tracking-widest uppercase mb-0.5">
-                                    <Sparkles className="w-3 h-3 text-amber-400" />
+                                <div className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] text-amber-900 dark:text-amber-300 font-mono tracking-widest uppercase mb-1 font-extrabold">
+                                    <Sparkles className="w-3.5 h-3.5 text-amber-600 dark:text-yellow-300 animate-pulse" />
                                     <span>Selamat Kepada Juara</span>
-                                    <Sparkles className="w-3 h-3 text-amber-400" />
+                                    <Sparkles className="w-3.5 h-3.5 text-amber-600 dark:text-yellow-300 animate-pulse" />
                                 </div>
-                                <h3 className="text-xl sm:text-2xl md:text-3xl font-display font-black gold-shimmer tracking-tight leading-tight">
+                                <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-[2.6rem] font-display font-black gold-title-crisp tracking-tight leading-tight">
                                     {employee.name}
                                 </h3>
                             </div>
 
-                            <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
-                                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-gradient-to-r from-amber-500/20 to-yellow-500/10 border border-amber-400/40 text-amber-200 text-xs font-semibold shadow-sm">
-                                    <Briefcase className="w-3.5 h-3.5 text-amber-400" />
+                            <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 pt-0.5">
+                                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl royal-gold-badge text-xs sm:text-sm font-bold">
+                                    <Briefcase className="w-3.5 h-3.5 text-amber-700 dark:text-yellow-300" />
                                     <span>{employee.position}</span>
                                 </div>
-                                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-800/95 border border-slate-700/80 text-slate-200 text-xs font-medium">
-                                    <Building className="w-3.5 h-3.5 text-amber-400/80" />
+                                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl royal-gold-badge-secondary text-xs sm:text-sm font-semibold">
+                                    <Building className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
                                     <span>{employee.department}</span>
                                 </div>
                             </div>
 
                             {nominee?.description && (
-                                <div className="p-2.5 rounded-lg bg-black/50 border border-amber-500/30 text-slate-300 text-xs leading-relaxed italic max-h-16 overflow-y-auto shadow-inner">
+                                <div className="p-2.5 rounded-xl bg-amber-50/95 border border-amber-300/80 text-amber-950 dark:bg-[#140e06]/95 dark:border-amber-400/35 dark:text-amber-100/90 text-xs sm:text-sm leading-relaxed italic max-h-16 overflow-y-auto shadow-inner">
                                     "{nominee.description}"
                                 </div>
                             )}
 
-                            {/* Bottom Festivity Pill */}
-                            <div className="pt-1 flex items-center justify-center md:justify-start gap-2">
-                                <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-amber-500/15 border border-amber-400/30 text-[11px] text-amber-300 font-semibold tracking-wider uppercase shadow-gold-glow">
-                                    <Award className="w-3.5 h-3.5 text-amber-400" />
+                            {/* Bottom Festivity Pill with Clean Separation */}
+                            <div className="pt-2 flex items-center justify-center md:justify-start">
+                                <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full royal-gold-pill text-[11px] sm:text-xs font-bold tracking-wider uppercase shadow-sm">
+                                    <Award className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
                                     <span>Penghargaan Resmi Dianugerahkan</span>
-                                    <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-spin-slow" />
+                                    <Sparkles className="w-3.5 h-3.5 text-amber-600 dark:text-yellow-300 animate-spin-slow" />
                                 </div>
                             </div>
                         </div>
                     </motion.div>
                 ) : (
-                    <div className="text-center py-6 relative z-10">
-                        <Trophy className="w-12 h-12 text-amber-400 mx-auto mb-2 opacity-50" />
-                        <h3 className="text-lg font-display font-bold text-slate-400">
+                    <div className="text-center py-8 relative z-10 px-6 royal-gold-card max-w-md mx-auto">
+                        <Trophy className="w-12 h-12 text-amber-600 dark:text-amber-400 mx-auto mb-2 opacity-60" />
+                        <h3 className="text-lg font-display font-bold text-amber-950 dark:text-amber-200">
                             Pemenang Belum Ditetapkan
                         </h3>
-                        <p className="text-slate-500 text-xs mt-1">
+                        <p className="text-amber-800/80 dark:text-amber-300/70 text-xs mt-1">
                             Admin belum menetapkan pemenang untuk kategori ini.
                         </p>
                     </div>

@@ -4,7 +4,7 @@
 
 @layer base {
     body {
-        @apply bg-[#070a13] text-slate-100 font-sans antialiased selection:bg-amber-500 selection:text-black;
+        @apply bg-[#faf8f5] text-slate-800 dark:bg-[#070a13] dark:text-slate-100 font-sans antialiased selection:bg-amber-500 selection:text-black transition-colors duration-300;
     }
 }
 
@@ -33,21 +33,39 @@
     box-shadow: inset 15px 0 35px rgba(0, 0, 0, 0.8), -10px 0 25px rgba(0, 0, 0, 0.9);
 }
 
-/* Gold Text Shimmer Effect */
+/* Gold Text Shimmer Effect — High Contrast Radiant Gold with Dark Shadow */
 .gold-shimmer {
     background: linear-gradient(
         90deg,
-        #e2b755 0%,
-        #fff4cc 30%,
-        #e2b755 50%,
-        #d19a2e 80%,
-        #fff4cc 100%
+        #fff8dc 0%,
+        #fef08a 20%,
+        #f59e0b 45%,
+        #fbbf24 60%,
+        #fff8dc 85%,
+        #d97706 100%
     );
     background-size: 200% auto;
     color: transparent;
     -webkit-background-clip: text;
     background-clip: text;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.85));
     animation: goldShimmer 4s linear infinite;
+}
+
+.dark .gold-shimmer {
+    background: linear-gradient(
+        90deg,
+        #ffffff 0%,
+        #fef08a 25%,
+        #f59e0b 50%,
+        #fbbf24 75%,
+        #ffffff 100%
+    );
+    background-size: 200% auto;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.9));
 }
 
 @keyframes goldShimmer {
@@ -82,31 +100,372 @@
 /* Ambient Floating Particles Background */
 .stars-bg {
     background-image: 
+        radial-gradient(1px 1px at 20px 30px, rgba(217, 119, 6, 0.35), rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 80px 120px, rgba(180, 83, 9, 0.25), rgba(0,0,0,0)),
+        radial-gradient(1.5px 1.5px at 150px 70px, rgba(245, 158, 11, 0.35), rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 240px 190px, rgba(217, 119, 6, 0.3), rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 300px 30px, rgba(245, 158, 11, 0.35), rgba(0,0,0,0));
+    background-repeat: repeat;
+    background-size: 350px 350px;
+}
+
+.dark .stars-bg {
+    background-image: 
         radial-gradient(1px 1px at 20px 30px, #eab308, rgba(0,0,0,0)),
         radial-gradient(1px 1px at 80px 120px, #ffffff, rgba(0,0,0,0)),
         radial-gradient(1.5px 1.5px at 150px 70px, #fde047, rgba(0,0,0,0)),
         radial-gradient(1px 1px at 240px 190px, #e2b755, rgba(0,0,0,0)),
         radial-gradient(2px 2px at 300px 30px, #fbbf24, rgba(0,0,0,0));
-    background-repeat: repeat;
-    background-size: 350px 350px;
 }
 
-/* Custom Dark Gold Scrollbar */
+/* Custom Scrollbar for Light & Dark */
 ::-webkit-scrollbar {
     width: 7px;
     height: 7px;
 }
 
 ::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+.dark ::-webkit-scrollbar-track {
     background: #090d18;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #3a2e12;
+    background: #cbd5e1;
     border-radius: 4px;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+    background: #3a2e12;
     border: 1px solid rgba(212, 175, 55, 0.2);
 }
 
 ::-webkit-scrollbar-thumb:hover {
     background: #d4af37;
 }
+
+/* ==========================================================================
+   Luxury Gala Night Stage Ambiance & Theatrical Gold Lighting
+   ========================================================================== */
+
+/* Theatrical Stage Ambient Gold Glow (Centered behind Nominee Card) */
+.stage-gold-halo {
+    background: radial-gradient(
+        ellipse 70% 55% at 50% 48%,
+        rgba(245, 158, 11, 0.16) 0%,
+        rgba(217, 119, 6, 0.08) 35%,
+        rgba(180, 83, 9, 0.02) 60%,
+        rgba(7, 10, 19, 0) 80%
+    );
+    pointer-events: none;
+}
+
+/* Overhead Golden Stage Beam */
+.stage-overhead-beam {
+    background: radial-gradient(
+        ellipse 80% 40% at 50% -5%,
+        rgba(253, 224, 71, 0.18) 0%,
+        rgba(245, 158, 11, 0.09) 35%,
+        rgba(217, 119, 6, 0.02) 65%,
+        rgba(0, 0, 0, 0) 85%
+    );
+    pointer-events: none;
+}
+
+/* Diagonal Theater Spotlights Sweeping Stage Center */
+.theatrical-spotlight-left {
+    background: radial-gradient(
+        ellipse 50% 75% at 10% 0%,
+        rgba(253, 224, 71, 0.12) 0%,
+        rgba(245, 158, 11, 0.05) 45%,
+        rgba(0, 0, 0, 0) 75%
+    );
+    pointer-events: none;
+}
+
+.theatrical-spotlight-right {
+    background: radial-gradient(
+        ellipse 50% 75% at 90% 0%,
+        rgba(253, 224, 71, 0.12) 0%,
+        rgba(245, 158, 11, 0.05) 45%,
+        rgba(0, 0, 0, 0) 75%
+    );
+    pointer-events: none;
+}
+
+/* Bottom Stage Reflection Glow */
+.stage-floor-glow {
+    background: radial-gradient(
+        ellipse 70% 30% at 50% 100%,
+        rgba(245, 158, 11, 0.12) 0%,
+        rgba(180, 83, 9, 0.05) 45%,
+        rgba(0, 0, 0, 0) 75%
+    );
+    pointer-events: none;
+}
+
+/* ==========================================================================
+   Dominant Royal Gold Gala Design System (Dual Mode: Light & Dark)
+   ========================================================================== */
+
+/* 1. Dominant Royal Gold Stage Viewport */
+/* Light Mode: Warm Champagne Silk Ivory with Radiant Golden Sunlight */
+.royal-gold-stage {
+    background-color: #faf6ee;
+    background-image: 
+        radial-gradient(circle at 50% 25%, #fff9ec 0%, #fdf5e2 40%, #f7ebd2 80%, #eee0c2 100%);
+    color: #451a03;
+    transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+/* Dark Mode: Deep Obsidian Gold with Radiant Warmth */
+.dark .royal-gold-stage {
+    background-color: #0b0804;
+    background-image: 
+        radial-gradient(circle at 50% 30%, #1f1608 0%, #130e05 45%, #080602 100%);
+    color: #fefce8;
+}
+
+/* 2. Royal Gold Presentation Plaque / Card */
+/* Light Mode: Ivory Porcelain Glass with 24K Gold Metallic Edge */
+.royal-gold-card,
+.luxury-nominee-plaque {
+    background: linear-gradient(145deg, rgba(255, 253, 248, 0.97) 0%, rgba(254, 249, 237, 0.95) 100%) !important;
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1.5px solid rgba(217, 119, 6, 0.6) !important;
+    box-shadow: 
+        0 20px 50px -10px rgba(180, 83, 9, 0.18),
+        0 0 30px rgba(245, 158, 11, 0.2),
+        inset 0 1px 2px rgba(255, 255, 255, 0.95) !important;
+    color: #451a03 !important;
+    transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Dark Mode: Obsidian Gold Presentation Plaque */
+.dark .royal-gold-card,
+.dark .luxury-nominee-plaque {
+    background: rgba(18, 14, 7, 0.94) !important;
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
+    border: 1.5px solid rgba(245, 158, 11, 0.55) !important;
+    box-shadow: 
+        0 30px 70px -15px rgba(0, 0, 0, 0.95),
+        0 0 45px rgba(217, 119, 6, 0.28),
+        inset 0 1px 1px rgba(254, 240, 138, 0.35) !important;
+    color: #fefce8 !important;
+}
+
+/* 3. Razor-Sharp Gold Title Typography */
+/* Light Mode: Hot-Stamped Imperial Bronze Gold Foil (Razor-Sharp Contrast on Cream) */
+.gold-title-crisp {
+    background: linear-gradient(
+        135deg,
+        #451a03 0%,
+        #78350f 25%,
+        #b45309 50%,
+        #92400e 75%,
+        #451a03 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 1px 1px rgba(255, 255, 255, 0.85)) drop-shadow(0 2px 6px rgba(180, 83, 9, 0.25));
+    animation: goldShimmer 6s linear infinite;
+}
+
+/* Dark Mode: Radiant 24K Platinum Gold with Deep Dark Drop Shadow */
+.dark .gold-title-crisp {
+    background: linear-gradient(
+        135deg,
+        #ffffff 0%,
+        #fef9c3 15%,
+        #fde047 35%,
+        #f59e0b 60%,
+        #fbbf24 85%,
+        #ffffff 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 2px 12px rgba(0, 0, 0, 0.95));
+    animation: goldShimmer 5s linear infinite;
+}
+
+/* 4. Prestigious Gold Category Ribbon Pill */
+/* Light Mode */
+.royal-gold-pill {
+    background: linear-gradient(
+        90deg, 
+        rgba(254, 243, 199, 0.95) 0%, 
+        rgba(253, 230, 138, 0.95) 50%, 
+        rgba(254, 243, 199, 0.95) 100%
+    );
+    border: 1.5px solid rgba(217, 119, 6, 0.7);
+    color: #78350f;
+    font-weight: 700;
+    box-shadow: 0 4px 14px rgba(217, 119, 6, 0.18);
+    text-shadow: none;
+}
+
+/* Dark Mode */
+.dark .royal-gold-pill {
+    background: linear-gradient(
+        90deg, 
+        rgba(245, 158, 11, 0.25) 0%, 
+        rgba(253, 224, 71, 0.35) 50%, 
+        rgba(245, 158, 11, 0.25) 100%
+    );
+    border: 1.5px solid rgba(251, 191, 36, 0.75);
+    color: #fef08a;
+    box-shadow: 0 0 18px rgba(245, 158, 11, 0.3);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* 5. High-Contrast Role & Department Badges */
+/* Light Mode */
+.royal-gold-badge {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border: 1px solid rgba(217, 119, 6, 0.5);
+    color: #78350f;
+    font-weight: 700;
+    box-shadow: 0 2px 6px rgba(180, 83, 9, 0.12);
+}
+
+.royal-gold-badge-secondary {
+    background: #fffdf7;
+    border: 1px solid rgba(217, 119, 6, 0.35);
+    color: #92400e;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(180, 83, 9, 0.08);
+}
+
+/* Dark Mode */
+.dark .royal-gold-badge {
+    background: rgba(0, 0, 0, 0.78);
+    border: 1px solid rgba(245, 158, 11, 0.55);
+    color: #fef3c7;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+
+.dark .royal-gold-badge-secondary {
+    background: rgba(18, 14, 8, 0.85);
+    border: 1px solid rgba(202, 138, 4, 0.4);
+    color: #fef9c3;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* 6. Royal Gold Stage HUD Controls */
+/* Light Mode */
+.royal-gold-hud {
+    background: rgba(255, 253, 248, 0.96) !important;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1.5px solid rgba(217, 119, 6, 0.5) !important;
+    box-shadow: 
+        0 15px 35px -5px rgba(180, 83, 9, 0.2),
+        0 0 20px rgba(245, 158, 11, 0.2);
+    color: #451a03 !important;
+}
+
+/* Dark Mode */
+.dark .royal-gold-hud {
+    background: rgba(14, 10, 5, 0.94) !important;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1.5px solid rgba(245, 158, 11, 0.6) !important;
+    box-shadow: 
+        0 15px 35px -5px rgba(0, 0, 0, 0.95),
+        0 0 25px rgba(217, 119, 6, 0.35);
+    color: #fefce8 !important;
+}
+
+/* 7. Gold Photo Frame & Avatar Placeholder */
+.royal-gold-frame {
+    background: linear-gradient(135deg, #fef08a 0%, #f59e0b 35%, #d97706 70%, #fef08a 100%);
+    box-shadow: 0 0 30px rgba(245, 158, 11, 0.45);
+}
+
+/* Light Mode Avatar BG */
+.royal-gold-avatar-bg {
+    background: radial-gradient(circle, #fef3c7 0%, #fde68a 100%);
+}
+
+/* Dark Mode Avatar BG */
+.dark .royal-gold-avatar-bg {
+    background: radial-gradient(circle, #251a08 0%, #120e06 100%);
+}
+
+/* 8. Royal Countdown Overlay Tokens */
+.countdown-stage-backdrop {
+    background-color: rgba(255, 253, 248, 0.96);
+    backdrop-filter: blur(32px);
+    -webkit-backdrop-filter: blur(32px);
+    color: #451a03;
+}
+
+.dark .countdown-stage-backdrop {
+    background-color: rgba(6, 4, 2, 0.94);
+    backdrop-filter: blur(32px);
+    -webkit-backdrop-filter: blur(32px);
+    color: #fefce8;
+}
+
+.countdown-medallion-frame {
+    background: linear-gradient(135deg, #fef08a 0%, #f59e0b 25%, #d97706 50%, #fbbf24 75%, #fef08a 100%);
+    box-shadow: 
+        0 0 45px rgba(245, 158, 11, 0.5),
+        0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.countdown-medallion-core {
+    background: radial-gradient(circle, #ffffff 15%, #fef9e7 55%, #fde68a 100%);
+    border: 2px solid rgba(217, 119, 6, 0.65);
+    box-shadow: inset 0 3px 8px rgba(180, 83, 9, 0.2);
+}
+
+.dark .countdown-medallion-core {
+    background: radial-gradient(circle, #1a1205 10%, #0c0803 55%, #040301 100%);
+    border: 2px solid rgba(245, 158, 11, 0.7);
+    box-shadow: inset 0 4px 15px rgba(0, 0, 0, 0.95);
+}
+
+.countdown-number-3d {
+    background: linear-gradient(135deg, #451a03 0%, #78350f 25%, #b45309 50%, #78350f 75%, #451a03 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 2px 0px rgba(254, 240, 138, 0.95)) drop-shadow(0 6px 14px rgba(180, 83, 9, 0.35));
+    animation: goldShimmer 5s linear infinite;
+}
+
+.dark .countdown-number-3d {
+    background: linear-gradient(135deg, #ffffff 0%, #fef08a 20%, #f59e0b 50%, #d97706 75%, #fde047 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 3px 0px rgba(120, 53, 15, 0.95)) drop-shadow(0 10px 28px rgba(0, 0, 0, 0.95));
+    animation: goldShimmer 5s linear infinite;
+}
+
+.countdown-category-box {
+    background: rgba(254, 243, 199, 0.9);
+    border: 1.5px solid rgba(217, 119, 6, 0.6);
+    box-shadow: 0 4px 16px rgba(180, 83, 9, 0.14);
+}
+
+.dark .countdown-category-box {
+    background: rgba(14, 10, 4, 0.92);
+    border: 1.5px solid rgba(245, 158, 11, 0.55);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.85);
+}
+
+
+

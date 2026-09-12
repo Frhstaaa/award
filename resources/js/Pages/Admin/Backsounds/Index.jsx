@@ -89,10 +89,10 @@ export default function BacksoundsIndex({ backsounds = [], categories = [] }) {
 
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
-                    <h3 className="text-xl font-display font-bold text-slate-100">
+                    <h3 className="text-xl font-display font-bold text-slate-900 dark:text-slate-100">
                         Pustaka Audio Acara
                     </h3>
-                    <p className="text-xs text-slate-400 mt-0.5">
+                    <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
                         Kelola file backsound untuk slide pengantar, nominasi, dan reveal pemenang
                     </p>
                 </div>
@@ -107,10 +107,10 @@ export default function BacksoundsIndex({ backsounds = [], categories = [] }) {
             </div>
 
             {/* Backsounds Table */}
-            <div className="rounded-2xl bg-[#0a0f1d] border border-amber-500/15 overflow-hidden shadow-xl">
+            <div className="rounded-2xl bg-white border border-slate-200/90 shadow-sm dark:bg-[#0a0f1d] dark:border-amber-500/15 dark:shadow-xl overflow-hidden">
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left text-sm text-slate-300">
-                        <thead className="bg-[#0f1629] text-xs font-semibold text-amber-400/90 uppercase tracking-wider border-b border-amber-500/10">
+                    <table className="w-full text-left text-sm text-slate-600 dark:text-slate-300">
+                        <thead className="bg-slate-50 text-xs font-semibold text-amber-600 uppercase tracking-wider border-b border-slate-200 dark:bg-[#0f1629] dark:text-amber-400/90 dark:border-amber-500/10">
                             <tr>
                                 <th className="px-6 py-4 w-12 text-center">Play</th>
                                 <th className="px-6 py-4">Judul Lagu / Track</th>
@@ -120,23 +120,23 @@ export default function BacksoundsIndex({ backsounds = [], categories = [] }) {
                                 <th className="px-6 py-4 text-right">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-800/80">
+                        <tbody className="divide-y divide-slate-200 dark:divide-slate-800/80">
                             {backsounds.length === 0 ? (
                                 <tr>
-                                    <td colSpan="6" className="text-center py-12 text-slate-500">
+                                    <td colSpan="6" className="text-center py-12 text-slate-400 dark:text-slate-500">
                                         Belum ada audio yang diunggah. Klik "Upload Audio" untuk menambahkan file musik.
                                     </td>
                                 </tr>
                             ) : (
                                 backsounds.map((track) => (
-                                    <tr key={track.id} className="hover:bg-slate-900/40 transition-colors">
+                                    <tr key={track.id} className="hover:bg-amber-50/50 dark:hover:bg-slate-900/40 transition-colors">
                                         <td className="px-6 py-4 text-center">
                                             <button
                                                 onClick={() => handlePlayPreview(track)}
                                                 className={`p-2.5 rounded-full transition-all ${
                                                     playingId === track.id
                                                         ? 'bg-amber-500 text-black shadow-gold-glow'
-                                                        : 'bg-slate-800 text-slate-300 hover:text-amber-300 hover:bg-slate-700'
+                                                        : 'bg-slate-100 text-slate-700 hover:text-amber-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:text-amber-300 dark:hover:bg-slate-700'
                                                 }`}
                                                 title={playingId === track.id ? 'Berhenti' : 'Putar Preview'}
                                             >
@@ -147,16 +147,16 @@ export default function BacksoundsIndex({ backsounds = [], categories = [] }) {
                                                 )}
                                             </button>
                                         </td>
-                                        <td className="px-6 py-4 font-semibold text-slate-100">
+                                        <td className="px-6 py-4 font-semibold text-slate-800 dark:text-slate-100">
                                             <div className="flex items-center gap-2">
-                                                <Music className="w-4 h-4 text-amber-400 flex-shrink-0" />
+                                                <Music className="w-4 h-4 text-amber-500 dark:text-amber-400 flex-shrink-0" />
                                                 <span>{track.title}</span>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
                                             {getContextBadge(track.context)}
                                         </td>
-                                        <td className="px-6 py-4 text-xs text-slate-400">
+                                        <td className="px-6 py-4 text-xs text-slate-600 dark:text-slate-400">
                                             {track.category ? track.category.name : 'Semua Kategori (Global)'}
                                         </td>
                                         <td className="px-6 py-4 text-center">
@@ -164,8 +164,8 @@ export default function BacksoundsIndex({ backsounds = [], categories = [] }) {
                                                 onClick={() => handleToggleActive(track.id)}
                                                 className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold border transition-colors ${
                                                     track.is_active
-                                                        ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
-                                                        : 'bg-slate-800 text-slate-500 border-slate-700'
+                                                        ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30'
+                                                        : 'bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-500 dark:border-slate-700'
                                                 }`}
                                             >
                                                 {track.is_active ? 'Aktif' : 'Nonaktif'}
@@ -174,7 +174,7 @@ export default function BacksoundsIndex({ backsounds = [], categories = [] }) {
                                         <td className="px-6 py-4 text-right">
                                             <button
                                                 onClick={() => handleDelete(track.id, track.title)}
-                                                className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                                                className="p-1.5 rounded-lg text-slate-500 hover:text-rose-600 hover:bg-rose-50 dark:text-slate-400 dark:hover:text-rose-400 dark:hover:bg-rose-500/10 transition-colors"
                                                 title="Hapus Audio"
                                             >
                                                 <Trash2 className="w-4 h-4" />
@@ -190,21 +190,21 @@ export default function BacksoundsIndex({ backsounds = [], categories = [] }) {
 
             {/* Modal Upload Audio */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-                    <div className="relative w-full max-w-lg rounded-3xl bg-[#0c1222] border border-amber-500/30 p-6 md:p-8 shadow-2xl">
-                        <div className="flex items-center justify-between pb-4 mb-6 border-b border-slate-800">
-                            <h3 className="text-lg font-display font-bold text-slate-100 flex items-center gap-2">
-                                <Music className="w-5 h-5 text-amber-400" />
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-black/70 backdrop-blur-sm">
+                    <div className="relative w-full max-w-lg rounded-3xl bg-white border border-amber-500/30 dark:bg-[#0c1222] p-6 md:p-8 shadow-2xl">
+                        <div className="flex items-center justify-between pb-4 mb-6 border-b border-slate-200 dark:border-slate-800">
+                            <h3 className="text-lg font-display font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                                <Music className="w-5 h-5 text-amber-500 dark:text-amber-400" />
                                 <span>Upload File Backsound</span>
                             </h3>
-                            <button onClick={closeModal} className="text-slate-400 hover:text-slate-200">
+                            <button onClick={closeModal} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
                                 <X className="w-5 h-5" />
                             </button>
                         </div>
 
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
-                                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                                     Judul / Nama Track *
                                 </label>
                                 <input
@@ -212,21 +212,21 @@ export default function BacksoundsIndex({ backsounds = [], categories = [] }) {
                                     value={data.title}
                                     onChange={(e) => setData('title', e.target.value)}
                                     placeholder="misal: Grand Orchestral Fanfare"
-                                    className="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-slate-100 placeholder-slate-500 text-sm focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
+                                    className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/90 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 text-sm focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
                                     required
                                 />
-                                {errors.title && <p className="text-xs text-rose-400 mt-1">{errors.title}</p>}
+                                {errors.title && <p className="text-xs text-rose-500 dark:text-rose-400 mt-1">{errors.title}</p>}
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                                         Konteks Pemutaran *
                                     </label>
                                     <select
                                         value={data.context}
                                         onChange={(e) => setData('context', e.target.value)}
-                                        className="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-slate-100 text-sm focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
+                                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/90 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 text-sm focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
                                         required
                                     >
                                         <option value="general">Umum / Intro</option>
@@ -235,17 +235,17 @@ export default function BacksoundsIndex({ backsounds = [], categories = [] }) {
                                         <option value="winner_reveal">Reveal Pemenang (Fanfare)</option>
                                         <option value="background_loop">Ambient Loop</option>
                                     </select>
-                                    {errors.context && <p className="text-xs text-rose-400 mt-1">{errors.context}</p>}
+                                    {errors.context && <p className="text-xs text-rose-500 dark:text-rose-400 mt-1">{errors.context}</p>}
                                 </div>
 
                                 <div>
-                                    <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                                         Kategori Spesifik (Opsional)
                                     </label>
                                     <select
                                         value={data.category_id}
                                         onChange={(e) => setData('category_id', e.target.value)}
-                                        className="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-slate-100 text-sm focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
+                                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/90 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 text-sm focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
                                     >
                                         <option value="">Semua Kategori (Global)</option>
                                         {categories.map((cat) => (
@@ -254,29 +254,29 @@ export default function BacksoundsIndex({ backsounds = [], categories = [] }) {
                                             </option>
                                         ))}
                                     </select>
-                                    {errors.category_id && <p className="text-xs text-rose-400 mt-1">{errors.category_id}</p>}
+                                    {errors.category_id && <p className="text-xs text-rose-500 dark:text-rose-400 mt-1">{errors.category_id}</p>}
                                 </div>
                             </div>
 
                             <div>
-                                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                                     File Audio (MP3 / WAV / OGG) *
                                 </label>
                                 <input
                                     type="file"
                                     accept="audio/*"
                                     onChange={(e) => setData('audio', e.target.files[0])}
-                                    className="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-amber-300 hover:file:bg-slate-700 cursor-pointer"
+                                    className="w-full text-xs text-slate-500 dark:text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-slate-100 file:text-amber-700 hover:file:bg-slate-200 dark:file:bg-slate-800 dark:file:text-amber-300 dark:hover:file:bg-slate-700 cursor-pointer"
                                     required
                                 />
-                                {errors.audio && <p className="text-xs text-rose-400 mt-1">{errors.audio}</p>}
+                                {errors.audio && <p className="text-xs text-rose-500 dark:text-rose-400 mt-1">{errors.audio}</p>}
                             </div>
 
-                            <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
+                            <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
                                 <button
                                     type="button"
                                     onClick={closeModal}
-                                    className="px-4 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-slate-200"
+                                    className="px-4 py-2 rounded-xl text-xs font-medium text-slate-600 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"
                                 >
                                     Batal
                                 </button>

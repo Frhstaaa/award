@@ -33,12 +33,12 @@ export default function SuspenseSlide({ categoryName, nominees = [], isCountingD
         <motion.div 
             initial={{ opacity: 0, scale: 0.97 }}
             animate={{ 
-                opacity: isCountingDown ? 0.65 : 1, 
-                scale: isCountingDown ? 0.96 : 1,
-                filter: isCountingDown ? 'blur(1.5px)' : 'blur(0px)',
+                opacity: isCountingDown ? 0 : 1, 
+                scale: isCountingDown ? 0.95 : 1,
+                pointerEvents: isCountingDown ? 'none' : 'auto',
             }}
             exit={{ opacity: 0, scale: 1.03 }}
-            transition={{ duration: 0.5, ease: 'easeOut' }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
             className="w-full max-w-5xl xl:max-w-6xl mx-auto text-center px-4 py-1 flex flex-col items-center justify-center my-auto relative z-10"
         >
             {/* Ambient Dramatic Pulsing Glow */}
@@ -53,9 +53,9 @@ export default function SuspenseSlide({ categoryName, nominees = [], isCountingD
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
-                className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-gradient-to-r from-amber-500/15 via-amber-400/20 to-amber-500/15 border border-amber-500/35 text-amber-300 text-[11px] sm:text-xs font-semibold uppercase tracking-widest mb-2 shadow-sm"
+                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full royal-gold-pill text-[11px] sm:text-xs font-bold uppercase tracking-widest mb-2 shadow-sm"
             >
-                <Award className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
+                <Award className="w-3.5 h-3.5 text-amber-600 dark:text-yellow-300 animate-pulse" />
                 <span className="truncate max-w-[280px] sm:max-w-md md:max-w-lg">
                     Pengumuman: {categoryName}
                 </span>
@@ -66,7 +66,7 @@ export default function SuspenseSlide({ categoryName, nominees = [], isCountingD
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.15, duration: 0.5 }}
-                className="text-2xl sm:text-3xl md:text-5xl font-display font-black gold-shimmer tracking-wider uppercase mb-1 drop-shadow-[0_0_25px_rgba(245,158,11,0.45)] leading-tight"
+                className="text-2xl sm:text-3xl md:text-5xl font-display font-black gold-title-crisp tracking-wider uppercase mb-1 drop-shadow-[0_0_30px_rgba(245,158,11,0.5)] leading-tight"
             >
                 And The Winner Is...
             </motion.h2>
@@ -76,11 +76,11 @@ export default function SuspenseSlide({ categoryName, nominees = [], isCountingD
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
-                className="flex items-center justify-center gap-2 text-slate-300 text-xs sm:text-sm font-light tracking-wide mb-3 sm:mb-4"
+                className="flex items-center justify-center gap-2 text-amber-950/90 dark:text-amber-100/90 text-xs sm:text-sm font-semibold tracking-wide mb-3 sm:mb-4 drop-shadow-sm"
             >
                 <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-yellow-400"></span>
                 </span>
                 <span>
                     {count > 0 
@@ -111,16 +111,16 @@ export default function SuspenseSlide({ categoryName, nominees = [], isCountingD
                                             duration: 0.4, 
                                             ease: 'easeOut' 
                                         }}
-                                        className={`${getCardWidthClass()} flex-shrink-0 group relative rounded-2xl bg-[#0c1224]/90 backdrop-blur-md border border-amber-500/25 hover:border-amber-400/60 p-2.5 sm:p-3 flex flex-col items-center text-center shadow-xl transition-all duration-300 hover:scale-[1.04] hover:shadow-[0_0_25px_rgba(245,158,11,0.25)]`}
+                                        className={`${getCardWidthClass()} flex-shrink-0 group relative rounded-2xl royal-gold-card hover:border-amber-400 p-2.5 sm:p-3 flex flex-col items-center text-center shadow-lg hover:scale-[1.04] transition-all duration-300`}
                                     >
                                         {/* Nominee Number Badge */}
-                                        <div className="absolute top-1.5 left-1.5 z-10 px-1.5 py-0.2 rounded-md bg-black/70 border border-amber-500/40 text-[9px] font-mono font-bold text-amber-300">
+                                        <div className="absolute top-1.5 left-1.5 z-10 px-2 py-0.5 rounded-md bg-amber-200/95 dark:bg-black/85 border border-amber-500/60 text-[9px] font-mono font-bold text-amber-950 dark:text-yellow-300 shadow">
                                             #{globalIdx + 1}
                                         </div>
 
                                         {/* Photo Frame with Gold Gradient */}
-                                        <div className={`${getPhotoSizeClass()} rounded-xl p-0.5 bg-gradient-to-tr from-amber-600 via-yellow-400 to-amber-200 shadow-md relative group-hover:shadow-gold-glow transition-shadow duration-300 mb-2 flex-shrink-0`}>
-                                            <div className="w-full h-full rounded-[10px] overflow-hidden bg-[#090e1c] relative flex items-center justify-center">
+                                        <div className={`${getPhotoSizeClass()} rounded-xl p-0.5 royal-gold-frame shadow-md relative group-hover:shadow-[0_0_20px_rgba(245,158,11,0.6)] transition-shadow duration-300 mb-2 flex-shrink-0`}>
+                                            <div className="w-full h-full rounded-[10px] overflow-hidden royal-gold-avatar-bg relative flex items-center justify-center border border-amber-400/40">
                                                 {emp.photo_url ? (
                                                     <img 
                                                         src={emp.photo_url} 
@@ -128,7 +128,7 @@ export default function SuspenseSlide({ categoryName, nominees = [], isCountingD
                                                         className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500" 
                                                     />
                                                 ) : (
-                                                    <User className="w-7 h-7 sm:w-8 sm:h-8 text-slate-500" />
+                                                    <User className="w-7 h-7 sm:w-8 sm:h-8 text-amber-600 dark:text-amber-300/80" />
                                                 )}
                                             </div>
                                         </div>
@@ -136,7 +136,7 @@ export default function SuspenseSlide({ categoryName, nominees = [], isCountingD
                                         {/* Candidate Name & Position */}
                                         <div className="w-full min-w-0 flex flex-col justify-between flex-1">
                                             <h4 
-                                                className="text-[11px] sm:text-xs md:text-[13px] font-display font-bold text-slate-100 line-clamp-2 group-hover:text-amber-300 transition-colors leading-tight min-h-[2.1rem] flex items-center justify-center"
+                                                className="text-[11px] sm:text-xs md:text-[13px] font-display font-bold text-amber-950 dark:text-yellow-100 line-clamp-2 group-hover:text-amber-700 dark:group-hover:text-yellow-300 transition-colors leading-tight min-h-[2.1rem] flex items-center justify-center drop-shadow-sm"
                                                 title={emp.name}
                                             >
                                                 {emp.name || 'Nama Kandidat'}
@@ -144,7 +144,7 @@ export default function SuspenseSlide({ categoryName, nominees = [], isCountingD
 
                                             {/* Position & Department */}
                                             <p 
-                                                className="text-[10px] sm:text-[11px] text-amber-300/80 truncate mt-1 leading-tight"
+                                                className="text-[10px] sm:text-[11px] text-amber-800 dark:text-amber-300/90 font-medium truncate mt-1 leading-tight"
                                                 title={`${emp.position || ''} - ${emp.department || ''}`}
                                             >
                                                 {emp.position || emp.department || 'Official Nominee'}
@@ -156,6 +156,7 @@ export default function SuspenseSlide({ categoryName, nominees = [], isCountingD
                         </div>
                     ))}
                 </div>
+
             ) : (
                 /* Fallback if category has 0 nominees registered */
                 <motion.div

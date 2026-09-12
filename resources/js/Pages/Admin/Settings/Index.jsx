@@ -56,23 +56,23 @@ export default function SettingsIndex({ settings = {} }) {
 
             <div className="max-w-3xl">
                 <div className="mb-6">
-                    <h3 className="text-xl font-display font-bold text-slate-100">
+                    <h3 className="text-xl font-display font-bold text-slate-900 dark:text-slate-100">
                         Pengaturan Brand, Logo & Slideshow
                     </h3>
-                    <p className="text-xs text-slate-400 mt-0.5">
+                    <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
                         Kelola logo resmi rumah sakit, judul panggung, dan durasi transisi acara
                     </p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Brand & Hospital Logo Section */}
-                    <div className="p-6 md:p-8 rounded-3xl bg-[#0a0f1d] border border-amber-500/15 shadow-xl space-y-6">
-                        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                            <h4 className="text-sm font-display font-bold text-amber-300 uppercase tracking-wider flex items-center gap-2">
-                                <Image className="w-4 h-4 text-amber-400" />
+                    <div className="p-6 md:p-8 rounded-3xl bg-white border border-slate-200/90 shadow-sm dark:bg-[#0a0f1d] dark:border-amber-500/15 dark:shadow-xl space-y-6">
+                        <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+                            <h4 className="text-sm font-display font-bold text-amber-700 dark:text-amber-300 uppercase tracking-wider flex items-center gap-2">
+                                <Image className="w-4 h-4 text-amber-500 dark:text-amber-400" />
                                 <span>Logo Rumah Sakit / Aplikasi</span>
                             </h4>
-                            <span className="text-[11px] font-mono text-amber-400/80 bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/20">
+                            <span className="text-[11px] font-mono text-amber-700 bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/20 dark:text-amber-400/80">
                                 Digunakan di Semua Halaman
                             </span>
                         </div>
@@ -95,10 +95,10 @@ export default function SettingsIndex({ settings = {} }) {
                             {/* Upload Controls */}
                             <div className="flex-1 space-y-3 w-full">
                                 <div>
-                                    <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">
+                                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
                                         Upload File Logo Baru (PNG, JPG, SVG, WebP)
                                     </label>
-                                    <p className="text-[11px] text-slate-400 mb-2.5">
+                                    <p className="text-[11px] text-slate-600 dark:text-slate-400 mb-2.5">
                                         Format disarankan: PNG transparan persegi / kotak (minimal 512x512 px) agar tampil tajam di layar proyektor panggung.
                                     </p>
                                 </div>
@@ -114,7 +114,7 @@ export default function SettingsIndex({ settings = {} }) {
                                     />
                                     <label
                                         htmlFor="logo-upload"
-                                        className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-400/40 text-amber-300 text-xs font-semibold transition-all hover:scale-[1.02]"
+                                        className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-400/40 text-amber-700 dark:text-amber-300 text-xs font-semibold transition-all hover:scale-[1.02]"
                                     >
                                         <Upload className="w-3.5 h-3.5" />
                                         <span>Pilih File Logo Baru</span>
@@ -123,7 +123,7 @@ export default function SettingsIndex({ settings = {} }) {
                                     <button
                                         type="button"
                                         onClick={handleResetToDefault}
-                                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-slate-300 text-xs font-medium transition-colors"
+                                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 dark:bg-slate-800/80 dark:hover:bg-slate-700/80 dark:border-slate-700 dark:text-slate-300 text-xs font-medium transition-colors"
                                     >
                                         <RefreshCw className="w-3.5 h-3.5 text-slate-400" />
                                         <span>Reset ke Logo RSU Livasya</span>
@@ -131,64 +131,64 @@ export default function SettingsIndex({ settings = {} }) {
                                 </div>
 
                                 {data.app_logo && (
-                                    <p className="text-xs text-emerald-400 flex items-center gap-1 font-mono">
+                                    <p className="text-xs text-emerald-600 dark:text-emerald-400 flex items-center gap-1 font-mono">
                                         <CheckCircle2 className="w-3.5 h-3.5" />
                                         File terpilih: {data.app_logo.name} (siap disimpan)
                                     </p>
                                 )}
 
                                 {errors.app_logo && (
-                                    <p className="text-xs text-rose-400 mt-1">{errors.app_logo}</p>
+                                    <p className="text-xs text-rose-500 dark:text-rose-400 mt-1">{errors.app_logo}</p>
                                 )}
                             </div>
                         </div>
                     </div>
 
                     {/* General Event Info */}
-                    <div className="p-6 md:p-8 rounded-3xl bg-[#0a0f1d] border border-amber-500/15 shadow-xl space-y-5">
-                        <h4 className="text-sm font-display font-bold text-amber-300 uppercase tracking-wider flex items-center gap-2">
-                            <Sparkles className="w-4 h-4 text-amber-400" />
+                    <div className="p-6 md:p-8 rounded-3xl bg-white border border-slate-200/90 shadow-sm dark:bg-[#0a0f1d] dark:border-amber-500/15 dark:shadow-xl space-y-5">
+                        <h4 className="text-sm font-display font-bold text-amber-700 dark:text-amber-300 uppercase tracking-wider flex items-center gap-2">
+                            <Sparkles className="w-4 h-4 text-amber-500 dark:text-amber-400" />
                             <span>Informasi Teks Header Acara</span>
                         </h4>
 
                         <div>
-                            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                                 Judul Acara (Event Title) *
                             </label>
                             <input
                                 type="text"
                                 value={data.event_title}
                                 onChange={(e) => setData('event_title', e.target.value)}
-                                className="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-slate-100 text-sm focus:border-amber-400 focus:ring-1 focus:ring-amber-400 font-display"
+                                className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/90 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 text-sm focus:border-amber-400 focus:ring-1 focus:ring-amber-400 font-display"
                                 required
                             />
-                            {errors.event_title && <p className="text-xs text-rose-400 mt-1">{errors.event_title}</p>}
+                            {errors.event_title && <p className="text-xs text-rose-500 dark:text-rose-400 mt-1">{errors.event_title}</p>}
                         </div>
 
                         <div>
-                            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                                 Subtitle / Tema Acara
                             </label>
                             <input
                                 type="text"
                                 value={data.event_subtitle}
                                 onChange={(e) => setData('event_subtitle', e.target.value)}
-                                className="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-slate-100 text-sm focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
+                                className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/90 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 text-sm focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
                             />
-                            {errors.event_subtitle && <p className="text-xs text-rose-400 mt-1">{errors.event_subtitle}</p>}
+                            {errors.event_subtitle && <p className="text-xs text-rose-500 dark:text-rose-400 mt-1">{errors.event_subtitle}</p>}
                         </div>
                     </div>
 
                     {/* Timing Settings */}
-                    <div className="p-6 md:p-8 rounded-3xl bg-[#0a0f1d] border border-amber-500/15 shadow-xl space-y-5">
-                        <h4 className="text-sm font-display font-bold text-amber-300 uppercase tracking-wider flex items-center gap-2">
-                            <Clock className="w-4 h-4 text-amber-400" />
+                    <div className="p-6 md:p-8 rounded-3xl bg-white border border-slate-200/90 shadow-sm dark:bg-[#0a0f1d] dark:border-amber-500/15 dark:shadow-xl space-y-5">
+                        <h4 className="text-sm font-display font-bold text-amber-700 dark:text-amber-300 uppercase tracking-wider flex items-center gap-2">
+                            <Clock className="w-4 h-4 text-amber-500 dark:text-amber-400" />
                             <span>Konfigurasi Durasi Auto-Play Slideshow</span>
                         </h4>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                             <div>
-                                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                                     Slide Nominasi (Detik) *
                                 </label>
                                 <input
@@ -197,15 +197,15 @@ export default function SettingsIndex({ settings = {} }) {
                                     max="60"
                                     value={data.slide_duration}
                                     onChange={(e) => setData('slide_duration', parseInt(e.target.value) || 0)}
-                                    className="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-slate-100 font-mono text-sm focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
+                                    className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/90 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 font-mono text-sm focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
                                     required
                                 />
-                                <span className="text-[11px] text-slate-500 mt-1 block">Waktu tampil per nominee</span>
-                                {errors.slide_duration && <p className="text-xs text-rose-400 mt-1">{errors.slide_duration}</p>}
+                                <span className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 block">Waktu tampil per nominee</span>
+                                {errors.slide_duration && <p className="text-xs text-rose-500 dark:text-rose-400 mt-1">{errors.slide_duration}</p>}
                             </div>
 
                             <div>
-                                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                                     Jeda Suspense (Detik) *
                                 </label>
                                 <input
@@ -214,15 +214,15 @@ export default function SettingsIndex({ settings = {} }) {
                                     max="30"
                                     value={data.suspense_duration}
                                     onChange={(e) => setData('suspense_duration', parseInt(e.target.value) || 0)}
-                                    className="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-slate-100 font-mono text-sm focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
+                                    className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/90 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 font-mono text-sm focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
                                     required
                                 />
-                                <span className="text-[11px] text-slate-500 mt-1 block">"And the winner is..."</span>
-                                {errors.suspense_duration && <p className="text-xs text-rose-400 mt-1">{errors.suspense_duration}</p>}
+                                <span className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 block">"And the winner is..."</span>
+                                {errors.suspense_duration && <p className="text-xs text-rose-500 dark:text-rose-400 mt-1">{errors.suspense_duration}</p>}
                             </div>
 
                             <div>
-                                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                                     Selebrasi Juara (Detik) *
                                 </label>
                                 <input
@@ -231,25 +231,25 @@ export default function SettingsIndex({ settings = {} }) {
                                     max="60"
                                     value={data.reveal_duration}
                                     onChange={(e) => setData('reveal_duration', parseInt(e.target.value) || 0)}
-                                    className="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-slate-100 font-mono text-sm focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
+                                    className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/90 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 font-mono text-sm focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
                                     required
                                 />
-                                <span className="text-[11px] text-slate-500 mt-1 block">Tirai terbuka & confetti</span>
-                                {errors.reveal_duration && <p className="text-xs text-rose-400 mt-1">{errors.reveal_duration}</p>}
+                                <span className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 block">Tirai terbuka & confetti</span>
+                                {errors.reveal_duration && <p className="text-xs text-rose-500 dark:text-rose-400 mt-1">{errors.reveal_duration}</p>}
                             </div>
                         </div>
 
-                        <div className="pt-3 border-t border-slate-800">
+                        <div className="pt-3 border-t border-slate-200 dark:border-slate-800">
                             <label className="flex items-center gap-3 cursor-pointer">
                                 <input
                                     type="checkbox"
                                     checked={data.auto_loop}
                                     onChange={(e) => setData('auto_loop', e.target.checked)}
-                                    className="w-4 h-4 rounded border-slate-700 text-amber-500 focus:ring-amber-400 bg-slate-900"
+                                    className="w-4 h-4 rounded border-slate-300 dark:border-slate-700 text-amber-500 focus:ring-amber-400 bg-white dark:bg-slate-900"
                                 />
                                 <div>
-                                    <span className="text-sm font-semibold text-slate-200">Looping Otomatis ke Awal</span>
-                                    <p className="text-xs text-slate-400">
+                                    <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">Looping Otomatis ke Awal</span>
+                                    <p className="text-xs text-slate-600 dark:text-slate-400">
                                         Setelah semua kategori selesai diumumkan, slideshow akan kembali mengulang dari kategori pertama secara mulus.
                                     </p>
                                 </div>
@@ -259,7 +259,7 @@ export default function SettingsIndex({ settings = {} }) {
 
                     <div className="flex items-center justify-between pt-2">
                         {recentlySuccessful ? (
-                            <span className="text-xs text-emerald-400 font-semibold flex items-center gap-1.5 bg-emerald-950/40 border border-emerald-500/30 px-3 py-1.5 rounded-xl">
+                            <span className="text-xs text-emerald-700 bg-emerald-50 border border-emerald-300 dark:text-emerald-400 font-semibold flex items-center gap-1.5 dark:bg-emerald-950/40 dark:border-emerald-500/30 px-3 py-1.5 rounded-xl">
                                 ✓ Pengaturan dan logo berhasil disimpan
                             </span>
                         ) : <div />}

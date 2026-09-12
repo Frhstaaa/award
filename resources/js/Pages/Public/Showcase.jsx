@@ -9,10 +9,14 @@ import SuspenseSlide from './Partials/SuspenseSlide';
 import WinnerRevealSlide from './Partials/WinnerRevealSlide';
 import CountdownOverlay from '@/Components/CountdownOverlay';
 import SlideshowControls from '@/Components/SlideshowControls';
+import ThemeToggle from '@/Components/ThemeToggle';
 import audioEngine from '@/Components/AudioEngine';
 import ApplicationLogo from '@/Components/ApplicationLogo';
+import GoldParticles from '@/Components/GoldParticles';
+import { useTheme } from '@/Hooks/useTheme';
 
 export default function Showcase({ categories = [], backsounds = {}, settings = {} }) {
+    const { isDark } = useTheme();
     const [hasStarted, setHasStarted] = useState(false);
     const [isPlaying, setIsPlaying] = useState(true);
     const [isMuted, setIsMuted] = useState(false);
@@ -239,12 +243,30 @@ export default function Showcase({ categories = [], backsounds = {}, settings = 
     };
 
     return (
-        <div className="h-screen h-[100dvh] w-full bg-[#05070d] text-slate-100 flex flex-col justify-between relative overflow-hidden select-none">
+        <div className="h-screen h-[100dvh] w-full royal-gold-stage text-amber-50 flex flex-col justify-between relative overflow-hidden select-none">
             <Head title={settings.event_title || 'Employee Award Showcase'} />
 
-            {/* Ambient Lighting / Atmospheric Background */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-6xl h-[300px] bg-gradient-to-b from-amber-500/10 via-amber-600/5 to-transparent pointer-events-none blur-3xl" />
-            <div className="absolute inset-0 stars-bg pointer-events-none opacity-50" />
+            {/* =========================================================
+                Dominant Royal Gold Gala Stage Atmospheric Lighting
+               ========================================================= */}
+            {/* 1. Overhead Golden Stage Light Wash */}
+            <div className="absolute inset-x-0 top-0 h-[380px] stage-overhead-beam pointer-events-none opacity-100" />
+
+            {/* 2. Dual Diagonal Theatrical Spotlights (Angled toward center stage) */}
+            <div className="absolute inset-0 theatrical-spotlight-left pointer-events-none opacity-85" />
+            <div className="absolute inset-0 theatrical-spotlight-right pointer-events-none opacity-85" />
+
+            {/* 3. Golden Halo Backdrop (Radiating warmly behind the presentation card) */}
+            <div className="absolute inset-0 stage-gold-halo pointer-events-none opacity-100" />
+
+            {/* 4. Bottom Stage Floor Luminescence */}
+            <div className="absolute inset-x-0 bottom-0 h-48 stage-floor-glow pointer-events-none opacity-90" />
+
+            {/* 5. Dynamic Floating Gold Particles (Dust, Twinkling Stars, & Bokeh Orbs) */}
+            <GoldParticles dustCount={70} starCount={16} bokehCount={9} isDark={isDark} />
+
+            {/* 6. Subtle Static Star Texture Overlay */}
+            <div className="absolute inset-0 stars-bg pointer-events-none opacity-25 dark:opacity-35" />
 
             {/* Initial Welcome Gateway for Audio Context */}
             {!hasStarted && (
@@ -255,32 +277,34 @@ export default function Showcase({ categories = [], backsounds = {}, settings = 
                 />
             )}
 
-            {/* Top Presentation Bar (Compact & Sleek) */}
-            <header className="relative z-30 w-full px-5 py-2.5 flex items-center justify-between border-b border-amber-500/15 bg-[#070a14]/70 backdrop-blur-md flex-shrink-0">
+            {/* Top Presentation Bar (Dual-mode: Ivory Champagne / Obsidian Gold) */}
+            <header className="relative z-30 w-full px-5 py-2.5 flex items-center justify-between border-b border-amber-400/40 bg-[#fffdf8]/92 text-amber-950 dark:border-amber-500/30 dark:bg-[#0c0905]/85 dark:text-amber-100 backdrop-blur-md flex-shrink-0 shadow-sm dark:shadow-lg dark:shadow-black/50 transition-colors duration-300">
                 <div className="flex items-center gap-2.5">
-                    <ApplicationLogo variant="icon" iconClassName="w-8 h-8" />
+                    <ApplicationLogo variant="icon" iconClassName="w-8 h-8 drop-shadow-sm" />
                     <div>
-                        <h1 className="text-xs sm:text-sm font-display font-bold gold-shimmer tracking-wider leading-tight">
+                        <h1 className="text-xs sm:text-sm font-display font-bold gold-title-crisp tracking-wider leading-tight">
                             {settings.event_title || 'RSU Livasya Awards 2026'}
                         </h1>
-                        <p className="text-[10px] text-slate-400 leading-tight">
+                        <p className="text-[10px] text-amber-900/80 dark:text-amber-200/80 leading-tight">
                             {settings.event_subtitle || 'Malam Penganugerahan & Apresiasi Insan Berprestasi'}
                         </p>
                     </div>
                 </div>
 
-                {/* Right: Discreet Admin Access */}
+                {/* Right: Theme Toggle & Admin Access */}
                 <div className="flex items-center gap-2">
+                    <ThemeToggle showLabel={false} />
                     <Link
                         href={route('admin.dashboard')}
-                        className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900/80 hover:bg-amber-500/20 text-slate-400 hover:text-amber-300 border border-slate-800 hover:border-amber-500/30 text-[11px] font-medium transition-all"
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-100/90 hover:bg-amber-200/90 text-amber-900 border border-amber-300 dark:bg-black/60 dark:hover:bg-amber-500/20 dark:text-amber-200 dark:hover:text-amber-100 dark:border-amber-500/35 dark:hover:border-amber-400 text-[11px] font-semibold transition-all shadow-sm"
                         title="Masuk ke Dashboard Admin"
                     >
-                        <Shield className="w-3 h-3" />
+                        <Shield className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
                         <span className="hidden sm:inline">Panel Admin</span>
                     </Link>
                 </div>
             </header>
+
 
             {/* Main Stage Presentation Area (Strictly Fits Screen, Room for HUD) */}
             <main className="relative z-10 flex-1 w-full flex items-center justify-center px-4 pt-1 pb-16 overflow-hidden">
@@ -335,22 +359,22 @@ export default function Showcase({ categories = [], backsounds = {}, settings = 
                         )}
                     </AnimatePresence>
                 )}
-
-                {/* Transparent Luxury Countdown Overlay (3-2-1) */}
-                <AnimatePresence>
-                    {isCountingDown && (
-                        <CountdownOverlay
-                            key={`countdown-${categoryIndex}`}
-                            currentNumber={countdownNumber}
-                            categoryName={currentCategory?.name}
-                            onSkip={() => {
-                                stopCountdown();
-                                setSlideStage('winner');
-                            }}
-                        />
-                    )}
-                </AnimatePresence>
             </main>
+
+            {/* Grand Royal Countdown Overlay (3-2-1) with Full Viewport Authority */}
+            <AnimatePresence>
+                {isCountingDown && (
+                    <CountdownOverlay
+                        key={`countdown-${categoryIndex}`}
+                        currentNumber={countdownNumber}
+                        categoryName={currentCategory?.name}
+                        onSkip={() => {
+                            stopCountdown();
+                            setSlideStage('winner');
+                        }}
+                    />
+                )}
+            </AnimatePresence>
 
             {/* Slideshow HUD Controller */}
             {hasStarted && categories.length > 0 && (
