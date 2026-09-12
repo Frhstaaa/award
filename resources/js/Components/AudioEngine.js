@@ -488,12 +488,13 @@ class AudioEngine {
             const text = words[count] || String(count);
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'id-ID';
-            utterance.rate = 0.92;
-            utterance.pitch = 0.95;
+            utterance.rate = 1.0;
+            utterance.pitch = 1.05;
             utterance.volume = this.volume;
 
             const voices = window.speechSynthesis.getVoices();
-            const idVoice = voices.find(v => v.lang === 'id-ID' || v.lang.startsWith('id'));
+            const femaleVoice = voices.find(v => (v.lang === 'id-ID' || v.lang.startsWith('id')) && (/gadis|female|perempuan|wanita/i.test(v.name)));
+            const idVoice = femaleVoice || voices.find(v => v.lang === 'id-ID' || v.lang.startsWith('id'));
             if (idVoice) utterance.voice = idVoice;
 
             window.speechSynthesis.speak(utterance);
