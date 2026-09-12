@@ -74,12 +74,12 @@ export default function WinnerRevealSlide({ winner, category }) {
                         className="w-full max-w-4xl lg:max-w-5xl flex flex-col md:flex-row items-center gap-5 sm:gap-7 md:gap-9 lg:gap-11 py-1 px-2 sm:px-4 relative z-10"
                     >
                         {/* Winner Avatar Column with Dedicated Width to Fully Contain Ribbon */}
-                        <div className="relative flex-shrink-0 w-44 sm:w-48 md:w-52 flex flex-col items-center justify-center mb-4 md:mb-0">
+                        <div className="relative flex-shrink-0 w-52 sm:w-60 md:w-64 lg:w-68 flex flex-col items-center justify-center mb-4 md:mb-0">
                             {/* Rotating Conic Sunburst of Glory (Continuous 360° Ray Motion) */}
                             <motion.div
                                 animate={{ rotate: 360 }}
                                 transition={{ repeat: Infinity, duration: 24, ease: 'linear' }}
-                                className="absolute -inset-13 sm:-inset-15 pointer-events-none opacity-45 mix-blend-screen"
+                                className="absolute -inset-16 sm:-inset-18 md:-inset-20 pointer-events-none opacity-45 mix-blend-screen"
                                 style={{
                                     background: 'conic-gradient(from 0deg, rgba(245, 158, 11, 0.5) 0deg 12deg, transparent 12deg 24deg, rgba(253, 224, 71, 0.45) 24deg 36deg, transparent 36deg 48deg, rgba(245, 158, 11, 0.5) 48deg 60deg, transparent 60deg 72deg, rgba(253, 224, 71, 0.45) 72deg 84deg, transparent 84deg 96deg, rgba(245, 158, 11, 0.5) 96deg 108deg, transparent 108deg 120deg, rgba(253, 224, 71, 0.45) 120deg 132deg, transparent 132deg 144deg, rgba(245, 158, 11, 0.5) 144deg 156deg, transparent 156deg 168deg, rgba(253, 224, 71, 0.45) 168deg 180deg, transparent 180deg 192deg, rgba(245, 158, 11, 0.5) 192deg 204deg, transparent 204deg 216deg, rgba(234, 179, 8, 0.4) 216deg 228deg, transparent 228deg 240deg, rgba(245, 158, 11, 0.5) 240deg 252deg, transparent 252deg 264deg, rgba(253, 224, 71, 0.45) 264deg 276deg, transparent 276deg 288deg, rgba(245, 158, 11, 0.5) 288deg 300deg, transparent 300deg 312deg, rgba(253, 224, 71, 0.45) 312deg 324deg, transparent 324deg 336deg, rgba(245, 158, 11, 0.5) 336deg 348deg, transparent 348deg 360deg)',
                                     maskImage: 'radial-gradient(circle, black 32%, transparent 70%)',
@@ -91,12 +91,12 @@ export default function WinnerRevealSlide({ winner, category }) {
 
                             {/* Continuous Expanding Golden Shockwave Halo Rings */}
                             <motion.div
-                                animate={{ scale: [1, 1.38, 1.55], opacity: [0.75, 0.3, 0] }}
+                                animate={{ scale: [1, 1.35, 1.5], opacity: [0.75, 0.3, 0] }}
                                 transition={{ repeat: Infinity, duration: 2.2, ease: 'easeOut' }}
                                 className="absolute inset-0 rounded-full border-2 border-amber-400/60 pointer-events-none"
                             />
                             <motion.div
-                                animate={{ scale: [1, 1.45, 1.7], opacity: [0.6, 0.2, 0] }}
+                                animate={{ scale: [1, 1.42, 1.62], opacity: [0.6, 0.2, 0] }}
                                 transition={{ repeat: Infinity, duration: 2.2, delay: 0.75, ease: 'easeOut' }}
                                 className="absolute inset-0 rounded-full border border-yellow-300/40 pointer-events-none"
                             />
@@ -105,33 +105,33 @@ export default function WinnerRevealSlide({ winner, category }) {
                             <motion.div
                                 animate={{ y: [-3, 3, -3], rotate: [0, 18, 0] }}
                                 transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
-                                className="absolute -top-1 -left-2 z-20 text-yellow-400 drop-shadow-[0_0_8px_rgba(253,224,71,0.8)]"
+                                className="absolute -top-1 -left-3 z-20 text-yellow-400 drop-shadow-[0_0_8px_rgba(253,224,71,0.8)]"
                             >
-                                <Sparkles className="w-4.5 h-4.5 fill-yellow-400/40" />
+                                <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 fill-yellow-400/40" />
                             </motion.div>
 
                             <motion.div
                                 animate={{ y: [3, -3, 3], scale: [0.9, 1.15, 0.9] }}
                                 transition={{ repeat: Infinity, duration: 2.7, delay: 0.5, ease: 'easeInOut' }}
-                                className="absolute -top-2 -right-2 z-20 text-amber-500 dark:text-amber-300 drop-shadow-[0_0_8px_rgba(245,158,11,0.8)]"
+                                className="absolute -top-2 -right-3 z-20 text-amber-500 dark:text-amber-300 drop-shadow-[0_0_8px_rgba(245,158,11,0.8)]"
                             >
-                                <Star className="w-4 h-4 fill-amber-400" />
+                                <Star className="w-4.5 h-4.5 sm:w-5 sm:h-5 fill-amber-400" />
                             </motion.div>
 
                             <motion.div
                                 animate={{ y: [-3, 3, -3], scale: [1, 1.2, 1] }}
                                 transition={{ repeat: Infinity, duration: 2.4, delay: 1, ease: 'easeInOut' }}
-                                className="absolute -bottom-1 -left-2.5 z-20 text-amber-500 dark:text-amber-400 drop-shadow-[0_0_6px_rgba(245,158,11,0.8)]"
+                                className="absolute -bottom-1 -left-3.5 z-20 text-amber-500 dark:text-amber-400 drop-shadow-[0_0_6px_rgba(245,158,11,0.8)]"
                             >
-                                <Star className="w-3.5 h-3.5 fill-amber-400" />
+                                <Star className="w-4 h-4 sm:w-4.5 sm:h-4.5 fill-amber-400" />
                             </motion.div>
 
                             <motion.div
                                 animate={{ y: [3, -3, 3], rotate: [0, -20, 0] }}
                                 transition={{ repeat: Infinity, duration: 3.2, delay: 0.3, ease: 'easeInOut' }}
-                                className="absolute -bottom-1 -right-2.5 z-20 text-yellow-400 drop-shadow-[0_0_8px_rgba(253,224,71,0.8)]"
+                                className="absolute -bottom-1 -right-3.5 z-20 text-yellow-400 drop-shadow-[0_0_8px_rgba(253,224,71,0.8)]"
                             >
-                                <Sparkles className="w-4 h-4 fill-yellow-300/50" />
+                                <Sparkles className="w-4.5 h-4.5 sm:w-5 sm:h-5 fill-yellow-300/50" />
                             </motion.div>
 
                             {/* Floating Royal Crown / Trophy at Top */}
@@ -141,15 +141,15 @@ export default function WinnerRevealSlide({ winner, category }) {
                                     scale: [1, 1.06, 1],
                                 }}
                                 transition={{ repeat: Infinity, duration: 2.6, ease: 'easeInOut' }}
-                                className="absolute -top-4 left-1/2 -translate-x-1/2 z-30 w-10 h-10 rounded-full bg-gradient-to-tr from-amber-500 via-yellow-300 to-amber-400 p-0.5 shadow-[0_0_16px_rgba(245,158,11,0.85)] flex items-center justify-center"
+                                className="absolute -top-5 sm:-top-5.5 left-1/2 -translate-x-1/2 z-30 w-11 h-11 sm:w-13 sm:h-13 rounded-full bg-gradient-to-tr from-amber-500 via-yellow-300 to-amber-400 p-0.5 shadow-[0_0_18px_rgba(245,158,11,0.85)] flex items-center justify-center"
                             >
                                 <div className="w-full h-full rounded-full bg-amber-50 dark:bg-[#080c18] flex items-center justify-center border border-amber-300/60 shadow-sm">
-                                    <Crown className="w-5 h-5 text-amber-600 dark:text-amber-400 fill-amber-500/40" />
+                                    <Crown className="w-5.5 h-5.5 sm:w-6.5 sm:h-6.5 text-amber-600 dark:text-amber-400 fill-amber-500/40" />
                                 </div>
                             </motion.div>
 
-                            {/* Outer Golden Border Circle with Metallic Glow - Proportional 'Aga Besaran' Sizing */}
-                            <div className="w-32 h-32 sm:w-38 sm:h-38 md:w-44 md:h-44 rounded-full p-1.5 bg-gradient-to-tr from-amber-600 via-yellow-300 to-amber-500 shadow-[0_0_28px_rgba(245,158,11,0.6)] relative z-10">
+                            {/* Outer Golden Border Circle with Metallic Glow - Generous, Regal Scale */}
+                            <div className="w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56 lg:w-60 lg:h-60 rounded-full p-2 sm:p-2.5 bg-gradient-to-tr from-amber-600 via-yellow-300 to-amber-500 shadow-[0_0_32px_rgba(245,158,11,0.65)] relative z-10">
                                 <div className="w-full h-full rounded-full overflow-hidden bg-amber-100/90 dark:bg-[#070b14] relative border-2 border-amber-300/60 shadow-inner">
                                     {employee.photo_url ? (
                                         <img 
@@ -159,7 +159,7 @@ export default function WinnerRevealSlide({ winner, category }) {
                                         />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center text-amber-700/60 dark:text-slate-600">
-                                            <User className="w-18 h-18 sm:w-20 sm:h-20" />
+                                            <User className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32" />
                                         </div>
                                     )}
                                 </div>
@@ -169,11 +169,11 @@ export default function WinnerRevealSlide({ winner, category }) {
                             <motion.div 
                                 animate={{ scale: [1, 1.04, 1] }}
                                 transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
-                                className="absolute -bottom-3.5 left-1/2 -translate-x-1/2 z-20 px-4 py-1 rounded-full bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 text-amber-950 font-display font-black text-[10px] sm:text-xs uppercase tracking-widest shadow-[0_4px_16px_rgba(0,0,0,0.25),0_0_18px_rgba(245,158,11,0.8)] whitespace-nowrap flex items-center gap-1.5 border-2 border-yellow-100"
+                                className="absolute -bottom-4 sm:-bottom-4.5 left-1/2 -translate-x-1/2 z-20 px-4 sm:px-5 py-1 sm:py-1.5 rounded-full bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 text-amber-950 font-display font-black text-xs sm:text-sm uppercase tracking-widest shadow-[0_5px_18px_rgba(0,0,0,0.25),0_0_20px_rgba(245,158,11,0.85)] whitespace-nowrap flex items-center gap-1.5 sm:gap-2 border-2 border-yellow-100"
                             >
-                                <Star className="w-3 h-3 fill-amber-950 text-amber-950" />
+                                <Star className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-amber-950 text-amber-950" />
                                 <span className="font-black tracking-wider">JUARA UTAMA</span>
-                                <Star className="w-3 h-3 fill-amber-950 text-amber-950" />
+                                <Star className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-amber-950 text-amber-950" />
                             </motion.div>
                         </div>
 

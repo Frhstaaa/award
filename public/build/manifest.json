@@ -371,7 +371,7 @@
     ]
   },
   "resources/js/Pages/Public/Partials/WinnerRevealSlide.jsx": {
-    "file": "assets/WinnerRevealSlide-YpoVjtX4.js",
+    "file": "assets/WinnerRevealSlide-Cji33ndA.js",
     "name": "WinnerRevealSlide",
     "src": "resources/js/Pages/Public/Partials/WinnerRevealSlide.jsx",
     "isDynamicEntry": true,
@@ -382,7 +382,7 @@
     ]
   },
   "resources/js/Pages/Public/Showcase.jsx": {
-    "file": "assets/Showcase-RToZIb75.js",
+    "file": "assets/Showcase-3GUgqATn.js",
     "name": "Showcase",
     "src": "resources/js/Pages/Public/Showcase.jsx",
     "isDynamicEntry": true,
@@ -411,7 +411,7 @@
     ]
   },
   "resources/js/app.jsx": {
-    "file": "assets/app-BjSWu3QY.js",
+    "file": "assets/app-BiwBY8q4.js",
     "name": "app",
     "src": "resources/js/app.jsx",
     "isEntry": true,
@@ -446,7 +446,7 @@
       "resources/js/Pages/Welcome.jsx"
     ],
     "css": [
-      "assets/app-0Txcc90K.css"
+      "assets/app-BjtwQ47f.css"
     ]
   }
 }
