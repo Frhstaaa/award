@@ -84,7 +84,7 @@ export default function Showcase({ categories = [], backsounds = {}, settings = 
                 audioEngine.unduck(100);
                 setSlideStage('winner');
             }
-        }, 1000);
+        }, 2000);
     }, []);
 
     // Stop countdown whenever changing away from suspense stage

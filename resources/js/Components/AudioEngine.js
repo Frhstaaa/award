@@ -455,9 +455,17 @@ class AudioEngine {
         // 1. Try high-definition pre-rendered audio file
         if (this.countdownVoiceSounds && this.countdownVoiceSounds[count]) {
             try {
+                // Stop any previous count voice immediately
+                [3, 2, 1].forEach(n => {
+                    if (this.countdownVoiceSounds[n]) {
+                        try {
+                            this.countdownVoiceSounds[n].stop();
+                        } catch (e) {}
+                    }
+                });
+
                 const sound = this.countdownVoiceSounds[count];
-                sound.volume(this.isMuted ? 0 : Math.min(1, this.volume * 1.35));
-                sound.stop();
+                sound.volume(this.isMuted ? 0 : Math.min(1, this.volume * 1.4));
                 sound.play();
                 return;
             } catch (e) {
