@@ -229,6 +229,61 @@ class AudioEngine {
         this.currentSound = newSound;
     }
 
+    /**
+     * Synthesize cinematic tension tick / heartbeat for countdown (3, 2, 1).
+     * Uses Web Audio API oscillator for instant, zero-latency playback.
+     */
+    playCountdownBeep(count) {
+        if (this.isMuted) return;
+        try {
+            const ctx = Howler.ctx || (typeof window !== 'undefined' && (window.AudioContext || window.webkitAudioContext) ? new (window.AudioContext || window.webkitAudioContext)() : null);
+            if (!ctx) return;
+            if (ctx.state === 'suspended') {
+                ctx.resume();
+            }
+
+            const now = ctx.currentTime;
+
+            // 1. Sub-bass cinematic pulse/thump
+            const subOsc = ctx.createOscillator();
+            const subGain = ctx.createGain();
+            subOsc.type = 'sine';
+            subOsc.frequency.setValueAtTime(count === 1 ? 130 : 90, now);
+            subOsc.frequency.exponentialRampToValueAtTime(30, now + 0.35);
+
+            subGain.gain.setValueAtTime(0.75 * this.volume, now);
+            subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+            subOsc.connect(subGain);
+            subGain.connect(ctx.destination);
+            subOsc.start(now);
+            subOsc.stop(now + 0.36);
+
+            // 2. High crisp tension chime
+            const chimeOsc = ctx.createOscillator();
+            const chimeGain = ctx.createGain();
+            chimeOsc.type = count === 1 ? 'sawtooth' : 'triangle';
+
+            const freqs = { 3: 440, 2: 554.37, 1: 880 };
+            const freq = freqs[count] || 440;
+
+            chimeOsc.frequency.setValueAtTime(freq, now);
+            if (count === 1) {
+                chimeOsc.frequency.exponentialRampToValueAtTime(1318.5, now + 0.5); // high E sweep
+            }
+
+            chimeGain.gain.setValueAtTime((count === 1 ? 0.4 : 0.45) * this.volume, now);
+            chimeGain.gain.exponentialRampToValueAtTime(0.001, now + (count === 1 ? 0.65 : 0.28));
+
+            chimeOsc.connect(chimeGain);
+            chimeGain.connect(ctx.destination);
+            chimeOsc.start(now);
+            chimeOsc.stop(now + (count === 1 ? 0.7 : 0.3));
+        } catch (e) {
+            console.warn('[AudioEngine] Countdown sound error:', e);
+        }
+    }
+
     stopAll() {
         this.playSessionId++; // Invalidate any in-flight loads
         this.killAllAudio();

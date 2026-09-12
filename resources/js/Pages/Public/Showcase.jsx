@@ -7,6 +7,7 @@ import CategoryIntroSlide from './Partials/CategoryIntroSlide';
 import NomineeSlide from './Partials/NomineeSlide';
 import SuspenseSlide from './Partials/SuspenseSlide';
 import WinnerRevealSlide from './Partials/WinnerRevealSlide';
+import CountdownOverlay from '@/Components/CountdownOverlay';
 import SlideshowControls from '@/Components/SlideshowControls';
 import audioEngine from '@/Components/AudioEngine';
 import ApplicationLogo from '@/Components/ApplicationLogo';
@@ -21,7 +22,12 @@ export default function Showcase({ categories = [], backsounds = {}, settings = 
     const [slideStage, setSlideStage] = useState('intro'); // 'intro', 'nominee', 'suspense', 'winner'
     const [nomineeIndex, setNomineeIndex] = useState(0);
 
+    // Dramatic Countdown (3-2-1) state
+    const [isCountingDown, setIsCountingDown] = useState(false);
+    const [countdownNumber, setCountdownNumber] = useState(3);
+
     const timerRef = useRef(null);
+    const countdownIntervalRef = useRef(null);
 
     const handleToggleMute = useCallback(() => {
         setIsMuted(prev => {
@@ -40,6 +46,46 @@ export default function Showcase({ categories = [], backsounds = {}, settings = 
     const nominees = currentCategory?.nominees || [];
     const currentNominee = nominees[nomineeIndex] || null;
     const currentWinner = currentCategory?.winner || null;
+
+    // Countdown handlers
+    const stopCountdown = useCallback(() => {
+        setIsCountingDown(false);
+        if (countdownIntervalRef.current) {
+            clearInterval(countdownIntervalRef.current);
+            countdownIntervalRef.current = null;
+        }
+    }, []);
+
+    const startCountdown = useCallback(() => {
+        if (countdownIntervalRef.current) {
+            clearInterval(countdownIntervalRef.current);
+        }
+
+        setIsCountingDown(true);
+        setCountdownNumber(3);
+        audioEngine.playCountdownBeep(3);
+
+        let current = 3;
+        countdownIntervalRef.current = setInterval(() => {
+            current -= 1;
+            if (current > 0) {
+                setCountdownNumber(current);
+                audioEngine.playCountdownBeep(current);
+            } else {
+                clearInterval(countdownIntervalRef.current);
+                countdownIntervalRef.current = null;
+                setIsCountingDown(false);
+                setSlideStage('winner');
+            }
+        }, 1000);
+    }, []);
+
+    // Stop countdown whenever changing away from suspense stage
+    useEffect(() => {
+        if (slideStage !== 'suspense') {
+            stopCountdown();
+        }
+    }, [slideStage, stopCountdown]);
 
     // Initialize audio engine
     useEffect(() => {
@@ -83,7 +129,12 @@ export default function Showcase({ categories = [], backsounds = {}, settings = 
                 setSlideStage('suspense');
             }
         } else if (slideStage === 'suspense') {
-            setSlideStage('winner');
+            if (!isCountingDown) {
+                startCountdown();
+            } else {
+                stopCountdown();
+                setSlideStage('winner');
+            }
         } else if (slideStage === 'winner') {
             // Move to next category
             if (categoryIndex + 1 < categories.length) {
@@ -101,13 +152,17 @@ export default function Showcase({ categories = [], backsounds = {}, settings = 
                 }
             }
         }
-    }, [currentCategory, slideStage, nomineeIndex, nominees.length, categoryIndex, categories.length, settings.auto_loop]);
+    }, [currentCategory, slideStage, nomineeIndex, nominees.length, categoryIndex, categories.length, settings.auto_loop, isCountingDown, startCountdown, stopCountdown]);
 
     // Prev step logic
     const handlePrev = useCallback(() => {
         if (slideStage === 'winner') {
             setSlideStage('suspense');
         } else if (slideStage === 'suspense') {
+            if (isCountingDown) {
+                stopCountdown();
+                return;
+            }
             if (nominees.length > 0) {
                 setNomineeIndex(nominees.length - 1);
                 setSlideStage('nominee');
@@ -126,11 +181,11 @@ export default function Showcase({ categories = [], backsounds = {}, settings = 
                 setSlideStage('winner');
             }
         }
-    }, [slideStage, nomineeIndex, nominees.length, categoryIndex]);
+    }, [slideStage, nomineeIndex, nominees.length, categoryIndex, isCountingDown, stopCountdown]);
 
     // Auto Advance Timer
     useEffect(() => {
-        if (!hasStarted || !isPlaying || !currentCategory) return;
+        if (!hasStarted || !isPlaying || !currentCategory || isCountingDown) return;
 
         let duration = slideDuration;
         if (slideStage === 'intro') duration = introDuration;
@@ -138,13 +193,17 @@ export default function Showcase({ categories = [], backsounds = {}, settings = 
         if (slideStage === 'winner') duration = revealDuration;
 
         timerRef.current = setTimeout(() => {
-            handleNext();
+            if (slideStage === 'suspense') {
+                startCountdown();
+            } else {
+                handleNext();
+            }
         }, duration);
 
         return () => {
             if (timerRef.current) clearTimeout(timerRef.current);
         };
-    }, [hasStarted, isPlaying, slideStage, nomineeIndex, categoryIndex, handleNext, slideDuration, suspenseDuration, revealDuration]);
+    }, [hasStarted, isPlaying, slideStage, nomineeIndex, categoryIndex, handleNext, startCountdown, isCountingDown, slideDuration, suspenseDuration, revealDuration]);
 
     // Keyboard Shortcuts
     useEffect(() => {
@@ -153,8 +212,13 @@ export default function Showcase({ categories = [], backsounds = {}, settings = 
 
             if (e.code === 'Space') {
                 e.preventDefault();
-                setIsPlaying(prev => !prev);
-            } else if (e.code === 'ArrowRight') {
+                if (isCountingDown) {
+                    stopCountdown();
+                    setSlideStage('winner');
+                } else {
+                    setIsPlaying(prev => !prev);
+                }
+            } else if (e.code === 'ArrowRight' || e.code === 'Enter') {
                 e.preventDefault();
                 handleNext();
             } else if (e.code === 'ArrowLeft') {
@@ -167,7 +231,7 @@ export default function Showcase({ categories = [], backsounds = {}, settings = 
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [hasStarted, handleNext, handlePrev, handleToggleMute]);
+    }, [hasStarted, handleNext, handlePrev, handleToggleMute, isCountingDown, stopCountdown]);
 
     const handleStart = () => {
         setHasStarted(true);
@@ -258,6 +322,7 @@ export default function Showcase({ categories = [], backsounds = {}, settings = 
                                 key={`suspense-${categoryIndex}`}
                                 categoryName={currentCategory.name}
                                 nominees={nominees}
+                                isCountingDown={isCountingDown}
                             />
                         )}
 
@@ -270,6 +335,21 @@ export default function Showcase({ categories = [], backsounds = {}, settings = 
                         )}
                     </AnimatePresence>
                 )}
+
+                {/* Transparent Luxury Countdown Overlay (3-2-1) */}
+                <AnimatePresence>
+                    {isCountingDown && (
+                        <CountdownOverlay
+                            key={`countdown-${categoryIndex}`}
+                            currentNumber={countdownNumber}
+                            categoryName={currentCategory?.name}
+                            onSkip={() => {
+                                stopCountdown();
+                                setSlideStage('winner');
+                            }}
+                        />
+                    )}
+                </AnimatePresence>
             </main>
 
             {/* Slideshow HUD Controller */}

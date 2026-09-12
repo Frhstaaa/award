@@ -2,7 +2,7 @@ import React from 'react';
 import { Award, Sparkles, User, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export default function SuspenseSlide({ categoryName, nominees = [] }) {
+export default function SuspenseSlide({ categoryName, nominees = [], isCountingDown = false }) {
     const count = nominees.length;
 
     // Card width dynamically tuned so nominees are always tightly grouped and centered
@@ -26,7 +26,11 @@ export default function SuspenseSlide({ categoryName, nominees = [] }) {
     return (
         <motion.div 
             initial={{ opacity: 0, scale: 0.97 }}
-            animate={{ opacity: 1, scale: 1 }}
+            animate={{ 
+                opacity: isCountingDown ? 0.65 : 1, 
+                scale: isCountingDown ? 0.96 : 1,
+                filter: isCountingDown ? 'blur(1.5px)' : 'blur(0px)',
+            }}
             exit={{ opacity: 0, scale: 1.03 }}
             transition={{ duration: 0.5, ease: 'easeOut' }}
             className="w-full max-w-5xl xl:max-w-6xl mx-auto text-center px-4 py-1 flex flex-col items-center justify-center my-auto relative z-10"

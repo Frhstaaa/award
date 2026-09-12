@@ -312,7 +312,7 @@
     ]
   },
   "resources/js/Pages/Public/Partials/SuspenseSlide.jsx": {
-    "file": "assets/SuspenseSlide-BTEBGItQ.js",
+    "file": "assets/SuspenseSlide-xKA3dWZ-.js",
     "name": "SuspenseSlide",
     "src": "resources/js/Pages/Public/Partials/SuspenseSlide.jsx",
     "isDynamicEntry": true,
@@ -344,7 +344,7 @@
     ]
   },
   "resources/js/Pages/Public/Showcase.jsx": {
-    "file": "assets/Showcase-Bnr5LKB8.js",
+    "file": "assets/Showcase-C3Sy7Ga8.js",
     "name": "Showcase",
     "src": "resources/js/Pages/Public/Showcase.jsx",
     "isDynamicEntry": true,
@@ -355,9 +355,9 @@
       "resources/js/Pages/Public/Partials/NomineeSlide.jsx",
       "resources/js/Pages/Public/Partials/SuspenseSlide.jsx",
       "resources/js/Pages/Public/Partials/WinnerRevealSlide.jsx",
+      "_vendor-motion-COsWvzaB.js",
       "_vendor-audio-CoTcYVOp.js",
       "_ApplicationLogo-Zrqa6M42.js",
-      "_vendor-motion-COsWvzaB.js",
       "_vendor-confetti-oQXWb4Lk.js"
     ]
   },
@@ -371,7 +371,7 @@
     ]
   },
   "resources/js/app.jsx": {
-    "file": "assets/app-CO4zBlZy.js",
+    "file": "assets/app-d3Arfsul.js",
     "name": "app",
     "src": "resources/js/app.jsx",
     "isEntry": true,
@@ -406,7 +406,7 @@
       "resources/js/Pages/Welcome.jsx"
     ],
     "css": [
-      "assets/app-_OxcWnxX.css"
+      "assets/app-BmTpzaan.css"
     ]
   }
 }
