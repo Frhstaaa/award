@@ -1,19 +1,36 @@
 import { Howl, Howler } from 'howler';
 
 /**
- * Production-Grade Single-Instance Audio Engine
- * Guarantees that exactly ONE audio track plays at any given time.
- * Features race-condition session tokens, idempotent track switching,
- * and zero-leak cleanup to eliminate double sounds/echoes completely.
+ * Production-Grade Single-Instance Audio Engine with Broadcast Crossfading
+ * Guarantees smooth, elegant track crossfading between slide stages.
+ * Features:
+ * - Equal-power / linear crossfades (fade out current track, fade in next track).
+ * - Context-aware transition timings (General, Nominees, Suspense, Winner).
+ * - Automatic audio ducking during dramatic 3-2-1 countdowns.
+ * - Idempotent track caching (does not restart if the same track is playing across nominees).
+ * - Category-specific backsound resolution with global fallbacks.
+ * - Zero-leak memory cleanup and strict race-condition session guards.
  */
+
+const DEFAULT_TRANSITION_PROFILES = {
+    general: { fadeOut: 1200, fadeIn: 1200 },
+    nominee_display: { fadeOut: 1000, fadeIn: 1000 },
+    nominee: { fadeOut: 1000, fadeIn: 1000 },
+    suspense: { fadeOut: 1000, fadeIn: 1000 },
+    winner_reveal: { fadeOut: 450, fadeIn: 200 },
+    winner: { fadeOut: 450, fadeIn: 200 },
+};
+
 class AudioEngine {
     constructor() {
         this.currentSound = null;
         this.currentContext = null;
         this.currentTrackUrl = null;
+        this.fadingSounds = new Set(); // Tracks currently fading out to prevent abrupt cuts
         this.html5FallbackAudio = null;
         this.volume = 0.8;
         this.isMuted = false;
+        this.isDucked = false;
         this.backsoundsMap = {};
         this.isInitialized = false;
         this.playSessionId = 0; // Incremented on each track switch to cancel stale async callbacks
@@ -30,32 +47,98 @@ class AudioEngine {
         if (this.html5FallbackAudio) {
             this.html5FallbackAudio.muted = muted;
         }
+
+        // If unmuting while a sound is active, fade up smoothly to avoid acoustic pops
+        if (!muted && this.currentSound && typeof this.currentSound.fade === 'function') {
+            try {
+                const target = this.isDucked ? this.volume * 0.35 : this.volume;
+                this.currentSound.fade(0, target, 300);
+            } catch (e) {}
+        }
     }
 
     setVolume(volume) {
-        this.volume = volume;
-        Howler.volume(volume);
-        if (this.currentSound) {
+        this.volume = Math.max(0, Math.min(1, volume));
+        Howler.volume(this.volume);
+        if (this.currentSound && typeof this.currentSound.volume === 'function') {
             try {
-                this.currentSound.volume(volume);
-            } catch (e) {
-                // ignore
-            }
+                const target = this.isDucked ? this.volume * 0.35 : this.volume;
+                this.currentSound.volume(target);
+            } catch (e) {}
         }
         if (this.html5FallbackAudio) {
-            this.html5FallbackAudio.volume = volume;
+            this.html5FallbackAudio.volume = this.isDucked ? this.volume * 0.35 : this.volume;
         }
     }
 
-    resolveTrackUrl(context, fallbackUrl = null) {
+    /**
+     * Smoothly duck current background music volume for dramatic tension (e.g. countdown beeps)
+     */
+    duck(targetMultiplier = 0.35, duration = 400) {
+        if (this.isMuted) return;
+        this.isDucked = true;
+        const targetVol = this.volume * targetMultiplier;
+
+        if (this.currentSound && typeof this.currentSound.fade === 'function') {
+            try {
+                const cur = this.currentSound.volume();
+                this.currentSound.fade(cur, targetVol, duration);
+            } catch (e) {}
+        }
+
+        if (this.html5FallbackAudio) {
+            this.fadeHtml5Audio(this.html5FallbackAudio, this.html5FallbackAudio.volume, targetVol, duration);
+        }
+    }
+
+    /**
+     * Smoothly restore background music volume after ducking
+     */
+    unduck(duration = 400) {
+        this.isDucked = false;
+        if (this.isMuted) return;
+        const targetVol = this.volume;
+
+        if (this.currentSound && typeof this.currentSound.fade === 'function') {
+            try {
+                const cur = this.currentSound.volume();
+                this.currentSound.fade(cur, targetVol, duration);
+            } catch (e) {}
+        }
+
+        if (this.html5FallbackAudio) {
+            this.fadeHtml5Audio(this.html5FallbackAudio, this.html5FallbackAudio.volume, targetVol, duration);
+        }
+    }
+
+    /**
+     * Resolve audio track URL with category-specific matching & context fallback
+     */
+    resolveTrackUrl(context, fallbackUrl = null, categoryId = null) {
         if (fallbackUrl) return fallbackUrl;
         if (!this.backsoundsMap) return null;
 
         const map = this.backsoundsMap;
 
+        const findInList = (list) => {
+            if (!Array.isArray(list) || list.length === 0) return null;
+            // 1. If categoryId specified, check for category-specific track
+            if (categoryId !== null && categoryId !== undefined) {
+                const catTrack = list.find(item => item && item.category_id == categoryId && item.file_url);
+                if (catTrack) return catTrack.file_url;
+            }
+            // 2. Global track (no category_id)
+            const globalTrack = list.find(item => item && !item.category_id && item.file_url);
+            if (globalTrack) return globalTrack.file_url;
+            // 3. Any active track in the list
+            if (list[0]?.file_url) return list[0].file_url;
+            return null;
+        };
+
         // 1. Check exact match
-        if (map[context] && Array.isArray(map[context]) && map[context].length > 0 && map[context][0]?.file_url) {
-            return map[context][0].file_url;
+        if (map[context]) {
+            const found = findInList(map[context]);
+            if (found) return found;
         }
 
         // 2. Check alias fallbacks
@@ -72,36 +155,74 @@ class AudioEngine {
 
         const candidates = aliases[context] || ['general'];
         for (const candidate of candidates) {
-            if (map[candidate] && Array.isArray(map[candidate]) && map[candidate].length > 0 && map[candidate][0]?.file_url) {
-                return map[candidate][0].file_url;
+            if (map[candidate]) {
+                const found = findInList(map[candidate]);
+                if (found) return found;
             }
         }
 
         // 3. Fallback to any song in 'all'
-        if (map.all && Array.isArray(map.all) && map.all.length > 0 && map.all[0]?.file_url) {
-            return map.all[0].file_url;
+        if (map.all) {
+            const found = findInList(map.all);
+            if (found) return found;
         }
 
         // 4. Any track found anywhere in the map
         for (const key of Object.keys(map)) {
-            if (Array.isArray(map[key]) && map[key].length > 0 && map[key][0]?.file_url) {
-                return map[key][0].file_url;
-            }
+            const found = findInList(map[key]);
+            if (found) return found;
         }
 
         return null;
     }
 
-    playHtml5Fallback(trackUrl, isLoop, sessionId) {
+    fadeHtml5Audio(audio, fromVol, toVol, duration, onComplete = null) {
+        if (!audio || duration <= 0) {
+            if (audio) audio.volume = toVol;
+            if (onComplete) onComplete();
+            return;
+        }
+
+        const startTime = performance.now();
+        const step = (now) => {
+            const elapsed = now - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const cur = fromVol + (toVol - fromVol) * progress;
+            try {
+                audio.volume = Math.max(0, Math.min(1, cur));
+            } catch (e) {}
+
+            if (progress < 1) {
+                requestAnimationFrame(step);
+            } else {
+                if (onComplete) onComplete();
+            }
+        };
+        requestAnimationFrame(step);
+    }
+
+    playHtml5Fallback(trackUrl, isLoop, sessionId, fadeInDuration = 800) {
         if (this.playSessionId !== sessionId) return;
 
         try {
             console.log(`[AudioEngine] Mengaktifkan fallback HTML5 Audio untuk:`, trackUrl);
-            this.killAllAudio();
+
+            // Clean previous HTML5 audio
+            if (this.html5FallbackAudio) {
+                const oldAudio = this.html5FallbackAudio;
+                this.html5FallbackAudio = null;
+                this.fadeHtml5Audio(oldAudio, oldAudio.volume, 0, 600, () => {
+                    try {
+                        oldAudio.pause();
+                        oldAudio.src = '';
+                    } catch (e) {}
+                });
+            }
 
             const audio = new Audio(trackUrl);
             audio.loop = isLoop;
-            audio.volume = this.isMuted ? 0 : this.volume;
+            const targetVol = this.isMuted ? 0 : (this.isDucked ? this.volume * 0.35 : this.volume);
+            audio.volume = fadeInDuration > 0 ? 0 : targetVol;
             
             const playPromise = audio.play();
             if (playPromise !== undefined) {
@@ -112,6 +233,9 @@ class AudioEngine {
                         return;
                     }
                     console.log(`[AudioEngine] Fallback HTML5 Audio berhasil diputar!`);
+                    if (fadeInDuration > 0 && !this.isMuted) {
+                        this.fadeHtml5Audio(audio, 0, targetVol, fadeInDuration);
+                    }
                 }).catch(err => {
                     console.warn(`[AudioEngine] Fallback HTML5 Audio play error:`, err);
                 });
@@ -124,12 +248,21 @@ class AudioEngine {
     }
 
     /**
-     * Stop and unload all audio nodes across Howler and HTML5 Audio
+     * Stop and unload all audio nodes across Howler and HTML5 Audio immediately
      */
     killAllAudio() {
+        for (const sound of this.fadingSounds) {
+            try {
+                sound.off();
+                sound.stop();
+                sound.unload();
+            } catch (e) {}
+        }
+        this.fadingSounds.clear();
+
         if (this.currentSound) {
             try {
-                this.currentSound.off(); // Remove all event listeners immediately
+                this.currentSound.off();
                 this.currentSound.stop();
                 this.currentSound.unload();
             } catch (e) {}
@@ -144,13 +277,19 @@ class AudioEngine {
             this.html5FallbackAudio = null;
         }
 
-        // Global safeguard: Stop any orphaned sounds in Howler pool
         try {
             Howler.stop();
         } catch (e) {}
     }
 
-    playContext(context, fallbackUrl = null) {
+    /**
+     * Play audio for a given showcase context with smooth crossfade
+     * @param {string} context - 'general' | 'nominee_display' | 'suspense' | 'winner_reveal'
+     * @param {string|null} fallbackUrl - Optional explicit track URL override
+     * @param {number|null} categoryId - Optional category ID for category-specific audio
+     * @param {object} options - Optional { fadeOutDuration, fadeInDuration }
+     */
+    playContext(context, fallbackUrl = null, categoryId = null, options = {}) {
         if (!this.isInitialized) return;
 
         // Auto-resume WebAudio context on user gesture if suspended
@@ -158,7 +297,7 @@ class AudioEngine {
             Howler.ctx.resume();
         }
 
-        const trackUrl = this.resolveTrackUrl(context, fallbackUrl);
+        const trackUrl = this.resolveTrackUrl(context, fallbackUrl, categoryId);
         if (!trackUrl) {
             console.warn(`[AudioEngine] Tidak ada file audio yang tersedia untuk konteks "${context}".`);
             return;
@@ -166,14 +305,19 @@ class AudioEngine {
 
         // =========================================================================
         // IDEMPOTENT CHECK: If the same track is ALREADY active or loading,
-        // simply update the context and do NOT start another sound!
+        // simply update the context and do NOT interrupt or restart!
         // =========================================================================
         if (this.currentTrackUrl === trackUrl) {
             this.currentContext = context;
 
-            // If it's loaded and paused, resume it
-            if (this.currentSound && this.currentSound.state() === 'loaded' && !this.currentSound.playing()) {
-                this.currentSound.play();
+            if (this.currentSound) {
+                if (this.currentSound.state() === 'loaded' && !this.currentSound.playing()) {
+                    this.currentSound.play();
+                }
+                // If ducked and context switched away from countdown, unduck
+                if (this.isDucked) {
+                    this.unduck(400);
+                }
             } else if (this.html5FallbackAudio && this.html5FallbackAudio.paused) {
                 this.html5FallbackAudio.play().catch(() => {});
             }
@@ -181,27 +325,71 @@ class AudioEngine {
         }
 
         // =========================================================================
-        // NEW TRACK TRANSITION: Kill any previous audio immediately
+        // SMOOTH CROSSFADE TRANSITION:
+        // Gracefully fade out previous track while fading in the new track
         // =========================================================================
         const sessionId = ++this.playSessionId;
-        this.killAllAudio();
+        const profile = DEFAULT_TRANSITION_PROFILES[context] || { fadeOut: 1000, fadeIn: 1000 };
+        const fadeOutDuration = options.fadeOutDuration !== undefined ? options.fadeOutDuration : profile.fadeOut;
+        const fadeInDuration = options.fadeInDuration !== undefined ? options.fadeInDuration : profile.fadeIn;
+
+        // 1. Gracefully fade out the currently active sound
+        if (this.currentSound) {
+            const oldSound = this.currentSound;
+            this.fadingSounds.add(oldSound);
+            this.currentSound = null;
+
+            const curVol = (typeof oldSound.volume === 'function') ? oldSound.volume() : this.volume;
+            const fadeTime = Math.max(100, fadeOutDuration);
+
+            try {
+                oldSound.fade(curVol, 0, fadeTime);
+            } catch (e) {}
+
+            const cleanupOldSound = () => {
+                if (this.fadingSounds.has(oldSound)) {
+                    try {
+                        oldSound.off();
+                        oldSound.stop();
+                        oldSound.unload();
+                    } catch (e) {}
+                    this.fadingSounds.delete(oldSound);
+                }
+            };
+
+            oldSound.once('fade', cleanupOldSound);
+            setTimeout(cleanupOldSound, fadeTime + 250);
+        }
+
+        // 2. Clean up any older lingering fading sounds to prevent buffer leaks
+        if (this.fadingSounds.size > 2) {
+            for (const s of Array.from(this.fadingSounds).slice(0, this.fadingSounds.size - 2)) {
+                try {
+                    s.off();
+                    s.stop();
+                    s.unload();
+                } catch (e) {}
+                this.fadingSounds.delete(s);
+            }
+        }
 
         this.currentContext = context;
         this.currentTrackUrl = trackUrl;
 
         const isLoop = context !== 'winner_reveal' && context !== 'winner';
+        const targetVolume = this.isMuted ? 0 : (this.isDucked ? this.volume * 0.35 : this.volume);
+        const effectiveFadeIn = Math.max(50, fadeInDuration);
 
-        console.log(`[AudioEngine] Memutar audio untuk konteks "${context}" (Session #${sessionId}):`, trackUrl);
+        console.log(`[AudioEngine] Transisi smooth audio "${context}" (Session #${sessionId}, FadeIn: ${effectiveFadeIn}ms, FadeOut: ${fadeOutDuration}ms):`, trackUrl);
 
-        // Use Web Audio API (html5: false) for reliable XHR loading without HTTP Range 206 errors
+        // 3. Instantiate new sound with volume 0 for smooth fade-in
         const newSound = new Howl({
             src: [trackUrl],
             html5: false,
             preload: true,
             loop: isLoop,
-            volume: this.isMuted ? 0 : this.volume,
+            volume: effectiveFadeIn > 0 ? 0 : targetVolume,
             onload: () => {
-                // If another track was requested while this one was loading, abort!
                 if (this.playSessionId !== sessionId) {
                     newSound.stop();
                     newSound.unload();
@@ -212,17 +400,27 @@ class AudioEngine {
             onloaderror: (id, err) => {
                 if (this.playSessionId !== sessionId) return;
                 console.warn('[AudioEngine] WebAudio load error, mencoba fallback HTML5 Audio:', id, err, trackUrl);
-                this.playHtml5Fallback(trackUrl, isLoop, sessionId);
+                this.playHtml5Fallback(trackUrl, isLoop, sessionId, effectiveFadeIn);
             },
             onplayerror: (id, err) => {
                 if (this.playSessionId !== sessionId) return;
                 console.warn('[AudioEngine] WebAudio play error, membuka kunci autoplay:', err);
                 newSound.once('unlock', () => {
                     if (this.playSessionId === sessionId) {
-                        newSound.play();
+                        const playId = newSound.play();
+                        if (effectiveFadeIn > 0 && !this.isMuted) {
+                            newSound.fade(0, targetVolume, effectiveFadeIn, playId);
+                        }
                     }
                 });
             },
+        });
+
+        // Trigger fade-in as soon as the sound starts playing
+        newSound.once('play', (soundId) => {
+            if (this.playSessionId === sessionId && effectiveFadeIn > 0 && !this.isMuted) {
+                newSound.fade(0, targetVolume, effectiveFadeIn, soundId);
+            }
         });
 
         newSound.play();
@@ -284,11 +482,36 @@ class AudioEngine {
         }
     }
 
-    stopAll() {
+    /**
+     * Stop all audio with optional smooth fade-out
+     */
+    stopAll(fadeOutDuration = 600) {
         this.playSessionId++; // Invalidate any in-flight loads
-        this.killAllAudio();
-        this.currentContext = null;
-        this.currentTrackUrl = null;
+
+        if (fadeOutDuration > 0 && this.currentSound && typeof this.currentSound.fade === 'function') {
+            const oldSound = this.currentSound;
+            this.currentSound = null;
+            this.currentContext = null;
+            this.currentTrackUrl = null;
+
+            try {
+                const cur = oldSound.volume();
+                oldSound.fade(cur, 0, fadeOutDuration);
+                setTimeout(() => {
+                    try {
+                        oldSound.off();
+                        oldSound.stop();
+                        oldSound.unload();
+                    } catch (e) {}
+                }, fadeOutDuration + 100);
+            } catch (e) {
+                this.killAllAudio();
+            }
+        } else {
+            this.killAllAudio();
+            this.currentContext = null;
+            this.currentTrackUrl = null;
+        }
     }
 }
 

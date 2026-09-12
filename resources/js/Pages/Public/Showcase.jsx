@@ -54,6 +54,7 @@ export default function Showcase({ categories = [], backsounds = {}, settings = 
     // Countdown handlers
     const stopCountdown = useCallback(() => {
         setIsCountingDown(false);
+        audioEngine.unduck(400);
         if (countdownIntervalRef.current) {
             clearInterval(countdownIntervalRef.current);
             countdownIntervalRef.current = null;
@@ -67,6 +68,7 @@ export default function Showcase({ categories = [], backsounds = {}, settings = 
 
         setIsCountingDown(true);
         setCountdownNumber(3);
+        audioEngine.duck(0.35, 400);
         audioEngine.playCountdownBeep(3);
 
         let current = 3;
@@ -79,6 +81,7 @@ export default function Showcase({ categories = [], backsounds = {}, settings = 
                 clearInterval(countdownIntervalRef.current);
                 countdownIntervalRef.current = null;
                 setIsCountingDown(false);
+                audioEngine.unduck(100);
                 setSlideStage('winner');
             }
         }, 1000);
@@ -95,25 +98,27 @@ export default function Showcase({ categories = [], backsounds = {}, settings = 
     useEffect(() => {
         audioEngine.init(backsounds);
         return () => {
-            audioEngine.stopAll();
+            audioEngine.stopAll(800);
         };
     }, [backsounds]);
 
-    // Handle audio context changes based on slide stage
+    // Handle audio context changes based on slide stage with smooth crossfade
     useEffect(() => {
         if (!hasStarted) return;
 
+        const catId = currentCategory?.id || null;
+
         if (slideStage === 'intro') {
-            audioEngine.playContext('general');
+            audioEngine.playContext('general', null, catId, { fadeOutDuration: 1200, fadeInDuration: 1200 });
         } else if (slideStage === 'nominee') {
-            audioEngine.playContext('nominee_display');
+            audioEngine.playContext('nominee_display', null, catId, { fadeOutDuration: 1000, fadeInDuration: 1000 });
         } else if (slideStage === 'suspense') {
             // Suspense stage ("And the winner is...")
-            audioEngine.playContext('suspense');
+            audioEngine.playContext('suspense', null, catId, { fadeOutDuration: 1000, fadeInDuration: 1000 });
         } else if (slideStage === 'winner') {
-            audioEngine.playContext('winner_reveal');
+            audioEngine.playContext('winner_reveal', null, catId, { fadeOutDuration: 400, fadeInDuration: 200 });
         }
-    }, [hasStarted, slideStage, categoryIndex]);
+    }, [hasStarted, slideStage, categoryIndex, currentCategory?.id]);
 
     // Next step logic
     const handleNext = useCallback(() => {
@@ -239,7 +244,8 @@ export default function Showcase({ categories = [], backsounds = {}, settings = 
 
     const handleStart = () => {
         setHasStarted(true);
-        audioEngine.playContext('general');
+        const catId = currentCategory?.id || null;
+        audioEngine.playContext('general', null, catId, { fadeInDuration: 1500 });
     };
 
     return (
