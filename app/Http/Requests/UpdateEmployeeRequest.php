@@ -17,7 +17,7 @@ class UpdateEmployeeRequest extends FormRequest
             'name' => 'required|string|max:150',
             'position' => 'required|string|max:150',
             'department' => 'required|string|max:150',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif,bmp,avif|max:10240',
         ];
     }
 }

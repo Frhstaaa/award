@@ -42,7 +42,7 @@ class SettingController extends Controller
             'suspense_duration' => 'required|integer|min:2|max:30',
             'reveal_duration' => 'required|integer|min:5|max:60',
             'auto_loop' => 'required|boolean',
-            'app_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:3072',
+            'app_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp,bmp|max:5120',
             'remove_logo' => 'nullable|boolean',
         ]);
 
