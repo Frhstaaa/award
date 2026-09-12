@@ -34,11 +34,30 @@ class AudioEngine {
         this.backsoundsMap = {};
         this.isInitialized = false;
         this.playSessionId = 0; // Incremented on each track switch to cancel stale async callbacks
+        this.countdownVoiceSounds = {};
+        this.initCountdownVoices();
+    }
+
+    initCountdownVoices() {
+        if (typeof window === 'undefined') return;
+        [3, 2, 1].forEach(num => {
+            try {
+                this.countdownVoiceSounds[num] = new Howl({
+                    src: [`/audio/countdown-${num}.mp3`],
+                    preload: true,
+                    html5: false,
+                    volume: this.isMuted ? 0 : Math.min(1, this.volume * 1.3),
+                });
+            } catch (e) {
+                console.warn(`[AudioEngine] Preload countdown voice ${num} error:`, e);
+            }
+        });
     }
 
     init(backsoundsMap = {}) {
         this.backsoundsMap = backsoundsMap;
         this.isInitialized = true;
+        this.initCountdownVoices();
     }
 
     setMuted(muted) {
@@ -425,6 +444,68 @@ class AudioEngine {
 
         newSound.play();
         this.currentSound = newSound;
+    }
+
+    /**
+     * Play human speech voice pronouncing "Tiga", "Dua", "Satu"
+     */
+    playCountdownVoice(count) {
+        if (this.isMuted) return;
+
+        // 1. Try high-definition pre-rendered audio file
+        if (this.countdownVoiceSounds && this.countdownVoiceSounds[count]) {
+            try {
+                const sound = this.countdownVoiceSounds[count];
+                sound.volume(this.isMuted ? 0 : Math.min(1, this.volume * 1.35));
+                sound.stop();
+                sound.play();
+                return;
+            } catch (e) {
+                console.warn(`[AudioEngine] Voice file error for ${count}:`, e);
+            }
+        }
+
+        // 2. Fallback to Web Speech API (Indonesian neural voice)
+        this.speakCountdownFallback(count);
+    }
+
+    /**
+     * Web Speech API fallback for counting in Indonesian (Tiga, Dua, Satu)
+     */
+    speakCountdownFallback(count) {
+        if (this.isMuted || typeof window === 'undefined' || !window.speechSynthesis) return;
+        try {
+            window.speechSynthesis.cancel();
+            const words = { 3: 'Tiga', 2: 'Dua', 1: 'Satu' };
+            const text = words[count] || String(count);
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'id-ID';
+            utterance.rate = 0.92;
+            utterance.pitch = 0.95;
+            utterance.volume = this.volume;
+
+            const voices = window.speechSynthesis.getVoices();
+            const idVoice = voices.find(v => v.lang === 'id-ID' || v.lang.startsWith('id'));
+            if (idVoice) utterance.voice = idVoice;
+
+            window.speechSynthesis.speak(utterance);
+        } catch (e) {
+            console.warn('[AudioEngine] Speech synthesis fallback error:', e);
+        }
+    }
+
+    /**
+     * Play coordinated countdown sound: Human Voice ("Tiga", "Dua", "Satu")
+     * combined with cinematic sub-bass heartbeat pulse & tension chime.
+     */
+    playCountdown(count) {
+        if (this.isMuted) return;
+
+        // 1. Play natural human voice counting down
+        this.playCountdownVoice(count);
+
+        // 2. Play sub-bass heartbeat pulse & tension chime
+        this.playCountdownBeep(count);
     }
 
     /**

@@ -69,14 +69,14 @@ export default function Showcase({ categories = [], backsounds = {}, settings = 
         setIsCountingDown(true);
         setCountdownNumber(3);
         audioEngine.duck(0.35, 400);
-        audioEngine.playCountdownBeep(3);
+        audioEngine.playCountdown(3);
 
         let current = 3;
         countdownIntervalRef.current = setInterval(() => {
             current -= 1;
             if (current > 0) {
                 setCountdownNumber(current);
-                audioEngine.playCountdownBeep(current);
+                audioEngine.playCountdown(current);
             } else {
                 clearInterval(countdownIntervalRef.current);
                 countdownIntervalRef.current = null;
